@@ -1,25 +1,37 @@
 import request from "@/utils/request";
-import type { ChildFilterParams, ChildFormResult } from "@/types/child/child.d";
+import type { AddOrUpdateChildParams, ChildFilterParams, ChildFormResult } from "@/types/child/child.d";
+
+export const getChilds = (params = {}) => {
+	return request<ChildFormResult>({
+	    url: "child/childs",
+	    method: "get",
+	    params
+	});
+}
 
 //获取宝贝信息
-export const getChild = async (params: ChildFilterParams, url?: string) => {
-	// if (import.meta.env.MOCK_API) {
-		// 模拟服务端返回数据
-	const mockData = {
-		id: params.id,
-		name: '小明',
-		birthDate: new Date('2018-05-12').getTime(),
-		gender: 'male',
-		region: '上海市浦东新区',
-		hobbies: ['reading', 'sports'],
-		remark: '对花粉过敏，喜欢踢足球'
-	};
-	return mockData
-	// }
-	
-    // return request<ChildFormResult>({
-    //     url: "child/child/" + url,
-    //     method: "get",
-    //     params
-    // });
+export const getChild = (params: ChildFilterParams) => {	
+    return request<ChildFormResult>({
+        url: "child/child",
+        method: "get",
+        params
+    });
+};
+
+
+//添加/更新宝贝信息
+export const addChild = (params: AddOrUpdateChildParams) => {
+    return request<ChildFormResult>({
+        url: "child/add",
+        method: "post",
+        params
+    });
+};
+
+export const updateChild = (params: AddOrUpdateChildParams) => {
+    return request<ChildFormResult>({
+        url: "child/update",
+        method: "post",
+        params
+    });
 };

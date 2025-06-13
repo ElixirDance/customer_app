@@ -61,13 +61,16 @@
 		    "path": "pages/demo/index"
 		},
 		{
-			"path": "pages/childArchive/index"
+			"path": "pages/childManage/index"
 		},
 		{
 			"path": "pages/siteSearch/index"
 		},
 		{
 			"path": "pages/familyManage/index"
+		},
+		{
+			"path": "pages/parentManage/index"
 		}
     ],
     "subPackages": [

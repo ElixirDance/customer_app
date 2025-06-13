@@ -22,9 +22,10 @@ const whiteList = [
     "/pages/reset/index",
 	// 新的路由
 	"/pages/demo/index",
-	"/pages/childArchive/index",
+	"/pages/childManage/index",
 	"/pages/siteSearch/index",
 	"/pages/familyManage/index",
+	"/pages/parentManage/index"
 ];
 
 function hasPermission(url: string): boolean {

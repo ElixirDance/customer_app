@@ -1,6 +1,6 @@
 <template>
   <view class="child-archive-page">
-    <up-navbar title="儿童专属档案" @leftClick="onBack" leftIconColor="#FFFFFF" :fixed="false" :border="false" bgColor="#409EFF" titleColor="#FFFFFF">
+    <up-navbar title="儿童专属档案" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
 	</up-navbar>
 
     <view class="form-container">
@@ -60,10 +60,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, computed, onMounted, onUnmounted, watch } from 'vue';
+import { ref, reactive, computed, onMounted, toRaw } from 'vue';
 import { onLoad } from "@dcloudio/uni-app";
 import { formatDate } from '@/utils/format';
-import { getChild } from '@/api/child/child';
+import { addChild, updateChild, getChild } from '@/api/child/child';
 
 // 表单引用
 const formRef = ref(null);
@@ -73,9 +73,9 @@ const formData = reactive({
   id: '',         // 档案ID，创建模式下为空，更新模式下有值
   name: '',
   birthDate: Date.now(),
-  gender: 'male', // 默认男
+  gender: 'male' as 'male' | 'female', // 默认男
   region: '',     // 地区
-  hobbies: [],    // 兴趣爱好
+  hobbies: [] as string[],    // 兴趣爱好
   remark: ''      // 备注信息
 });
 
@@ -149,32 +149,35 @@ async function submitForm() {
     await formRef.value.validate();
 
     submitting.value = true;
-
-    // 模拟提交表单
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    uni.showToast({
-      title: isEditMode ? '档案更新成功' : '档案创建成功',
-      icon: 'success'
-    });
+	
+	const { id } = toRaw(formData);
+	
+	const response =  id ? await updateChild(toRaw(formData)) : await addChild(toRaw(formData));
+	
+	if (response) {
+		uni.showToast({
+		  title: isEditMode ? '档案更新成功' : '档案创建成功',
+		  icon: 'success'
+		});
+	}
 
     isSubmitted.value = true;
     submitting.value = false;
 
     // 提交成功后返回上一页
     setTimeout(() => {
-      // router.back();
+	  uni.navigateBack()
     }, 1500);
 
     // 这里可以添加实际的提交逻辑
-    console.log(isEditMode ? '更新的表单数据:' : '创建的表单数据:', formData);
+    console.log(isEditMode ? '更新的表单数据:' : '创建的表单数据:', toRaw(formData));
   } catch (error) {
     console.log('表单验证失败:', error);
   }
 }
 
 // 从URL获取id并加载数据
-async function loadDataById(id) {
+async function loadDataById(id: string) {
   if (!id) return;
 
   try {
@@ -219,18 +222,6 @@ onMounted(() => {
   if (id) {
     loadDataById(id);
   }
-});
-
-// 监听路由参数变化
-// watch(() => route.query.id, (newId) => {
-//   if (newId && newId !== formData.id) {
-//     formData.id = newId;
-//     loadDataById(newId);
-//   }
-// });
-
-onUnmounted(() => {
-  // 清理工作
 });
 </script>
 

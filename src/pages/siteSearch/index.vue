@@ -42,7 +42,7 @@
 			id: 1,
 			title: '儿童档案管理',
 			description: '创建和编辑儿童基本信息',
-			path: '/pages/childArchive/index'
+			path: '/pages/childManage/index'
 		},
 		{
 			id: 2,

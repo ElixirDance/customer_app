@@ -1,18 +1,28 @@
 
 export interface ChildFilterParams {
-    id: number;
+    id: string;
 }
 
 export interface ChildFormResult {
 	data: {
-		id: number;
+		id: string;
 		name: string;
 		birthDate: number;
 		gender: 'male' | 'female';
 		region: string;
 		hobbies: string[];
 		remark: string;
-	},
+	}[],
 	code: number;
 	message: string;
+}
+
+export interface AddOrUpdateChildParams {
+	id: string;
+	name: string;
+	birthDate: number;
+	gender: 'male' | 'female';
+	region: string;
+	hobbies: string[];
+	remark: string;
 }

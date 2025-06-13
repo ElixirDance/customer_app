@@ -1,11 +1,5 @@
 <template>
   <view class="family-management">
-    <!-- 标题栏 -->
-   <!-- <view class="header">
-      <text class="back-btn" @click="onBack">←</text>
-      <text class="title">家庭管理</text>
-    </view -->
-	
 	<up-navbar title="家庭管理" @leftClick="onBack" leftIconColor="#000000" :fixed="false" :border="false" bgColor="#ffffff" titleColor="#000000">
 	</up-navbar>
 
@@ -18,7 +12,7 @@
     <view class="child-section">
       <text class="section-title">孩子</text>
       <view class="child-list">
-		<view class="child-item" v-for="(child, index) in childList" :key="index" @click="onUpdateChild">
+		<view class="child-item" v-for="(child, index) in childList" :key="index" @click="onUpdateChild(child.id)">
 		  <view class="avatar-container">
 		    <image :src="child.avatar" class="child-avatar" />
 		    <text class="current-tag" v-if="child.isCurrent">当前</text>
@@ -47,16 +41,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { getChilds } from '@/api/child/child';
 
 // 模拟孩子数据，实际可从接口获取
-const childList = ref([
-  {
-    avatar: 'https://picsum.photos/200?random=child' + Date.now() % 10, // 实际替换为真实头像地址
-    isCurrent: true,
-    name: '朗哥'
-  }
-]);
+const childList = ref([]);
 // 模拟家长人数，实际可从接口获取
 const parentCount = ref(2);
 
@@ -65,22 +54,34 @@ const onBack = () => {
   uni.navigateBack();
 };
 
-const onUpdateChild = () => {}
+const onUpdateChild = (id:string) => {
+	uni.navigateTo({
+		url: "/pages/childManage/index?id=" + id
+	})
+}
 
 // 添加孩子逻辑，可扩展调接口等
 const onAddChild = () => {
   uni.navigateTo({
-  	url: "/pages/childArchive/index"
+  	url: "/pages/childManage/index"
   })
 };
 
 // 查看家长列表逻辑，可扩展跳转新页面等
 const onShowParents = () => {
-  uni.showToast({
-    title: '点击查看家长列表，可扩展实现跳转逻辑',
-    icon: 'none'
-  });
+  uni.navigateTo({
+  	url: "/pages/parentManage/index"
+  })
 };
+
+const loadDataOfChilds = async () => {
+	const response = await getChilds();
+	childList.value = response;
+} 
+
+onMounted(() => {
+	loadDataOfChilds()
+})
 </script>
 
 <style lang="scss" scoped>

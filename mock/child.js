@@ -20,7 +20,7 @@ Mock.mock(baseUrl+'/api/child/child', 'get', {
 Mock.mock(baseUrl+'/api/child/childs', 'get', {
   'code': 0,
   'message': 'success',
-  'data|2-5': [ // 随机生成2-5个孩子数据
+  'data|1-3': [ // 随机生成2-5个孩子数据
     {
       'id': '@id', // 随机生成ID
       'name': '@cname', // 随机生成中文姓名

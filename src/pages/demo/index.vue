@@ -3,7 +3,7 @@
 		<up-cell
 		    title="儿童专属档案"
 		    isLink
-		    url="/pages/childManage/index?id=1"
+		    url="/pages/childManage/index"
 		></up-cell>
 		<up-cell
 		    title="站内搜索"

@@ -11,6 +11,7 @@ export interface Parent {
 	gender: 'male' | 'female';
 	region: string;
 	remark: string;
+	isAdmin: boolean;
 }
 
 export interface ParentFormResult {

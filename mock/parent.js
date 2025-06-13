@@ -51,3 +51,9 @@ Mock.mock(baseUrl+'/api/parent/parents', 'get', {
     }
   ]
 });
+
+Mock.mock(baseUrl+'/api/parent/delete', 'post', {
+  'code': 0,
+  'message': 'success',
+  'data': true
+});

@@ -69,7 +69,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { getParents } from '@/api/parent/parent';
+import { deleteParent, getParents } from '@/api/parent/parent';
 import type { Parent } from '@/types/parent/parent';
 
 const parentList = ref<Parent[]>([]);
@@ -114,14 +114,17 @@ const confirmDelete = (parent: Parent, index: number) => {
   uni.showModal({
     title: '确认删除',
     content: `是否删除家长 ${parent.phone}？`,
-    success: (res) => {
+    success: async (res) => {
       if (res.confirm) {
         // 移除家长
-        parentList.value.splice(index, 1);
-        uni.showToast({
-          title: '删除成功',
-          icon: 'success',
-        });
+		const response = await deleteParent({id: parent.id});
+		if(response) {
+			parentList.value.splice(index, 1);
+			uni.showToast({
+			  title: '删除成功',
+			  icon: 'success',
+			});
+		}
       }
     },
   });

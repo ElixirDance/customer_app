@@ -68,30 +68,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { getParents } from '@/api/parent/parent';
+import type { Parent } from '@/types/parent/parent';
 
-// 模拟家长数据（实际需对接接口）
-interface Parent {
-  id: number;
-  avatar: string;
-  phone: string;
-  isAdmin: boolean; // 是否是家庭管理员（本人）
-}
-
-const parentList = ref<Parent[]>([
-  {
-    id: 1,
-    avatar: 'https://picsum.photos/200?random=child' + Date.now() % 11,
-    phone: '185****9053',
-    isAdmin: true,
-  },
-  {
-    id: 2,
-    avatar: 'https://picsum.photos/200?random=child' + Date.now() % 10,
-    phone: '186****3620',
-    isAdmin: false,
-  },
-]);
+const parentList = ref<Parent[]>([]);
 
 // 编辑模式
 const isEditMode = ref(false);
@@ -145,6 +126,15 @@ const confirmDelete = (parent: Parent, index: number) => {
     },
   });
 };
+
+const loadDataOfParent = async () => {
+	const response = await getParents();
+	parentList.value = response;
+}
+
+onMounted(() => {
+	loadDataOfParent()
+})
 </script>
 
 <style lang="scss" scoped>

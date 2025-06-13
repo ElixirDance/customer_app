@@ -145,7 +145,8 @@ onMounted(() => {
 	  display: flex;
 	  flex-direction: column;
 	  align-items: center;
-	  margin-right: 40rpx;
+	  margin: 0 40rpx 40rpx 0;
+	  
 	  
 	  .avatar-container {
 	    position: relative;
@@ -181,6 +182,7 @@ onMounted(() => {
 	  display: flex;
 	  flex-direction: column;
 	  align-items: center;
+	  width: 160rpx;
 	  
 	  .add-icon {
 	    font-size: 40rpx;
@@ -189,6 +191,7 @@ onMounted(() => {
 	  }
 	  
 	  .add-text {
+		margin-top: 10rpx;
 	    font-size: 26rpx;
 	    color: #999;
 	  }

@@ -57,21 +57,30 @@
         {
             "path": "pages/reset/index"
         },
-		{
-		    "path": "pages/demo/index"
-		},
-		{
-			"path": "pages/childManage/index"
-		},
-		{
-			"path": "pages/siteSearch/index"
-		},
-		{
-			"path": "pages/familyManage/index"
-		},
-		{
+        {
+            "path": "pages/demo/index"
+        },
+        {
+            "path": "pages/childManage/index"
+        },
+        {
+            "path": "pages/siteSearch/index"
+        },
+        {
+            "path": "pages/familyManage/index"
+        },
+        {
 			"path": "pages/parentManage/index"
-		}
+		},
+        {
+            "path": "pages/analytics/index"
+        },
+        {
+            "path": "pages/chatAI/index"
+        },
+        {
+            "path": "pages/chat/index"
+        }
     ],
     "subPackages": [
         {
@@ -514,7 +523,10 @@
             ]
         }
     ],
-    "requiredPrivateInfos": ["chooseLocation", "chooseAddress"],
+    "requiredPrivateInfos": [
+        "chooseLocation",
+        "chooseAddress"
+    ],
     "tabBar": {
         "backgroundColor": "#f5f5f5",
         "borderStyle": "white",

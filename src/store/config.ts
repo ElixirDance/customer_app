@@ -223,7 +223,7 @@ export const useConfigStore = defineStore("config", {
             if (this.deCopyright && this.poweredByStatus == 0) {
                 title += this.poweredBy ?? "";
             } else {
-                title += "-powered by tigshop";
+                title += "";
             }
             this.baseInfo.shopTitle = title;
             const metaDescription = document.querySelector('meta[name="description"]');

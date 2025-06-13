@@ -20,6 +20,11 @@ const whiteList = [
     "/pages/user/bindMobilePhone/index",
     "/pages/salesman/salesmanCard",
     "/pages/reset/index",
+	// 新的路由
+	"/pages/demo/index",
+	"/pages/childArchive/index",
+	"/pages/siteSearch/index",
+	"/pages/familyManage/index",
 ];
 
 function hasPermission(url: string): boolean {

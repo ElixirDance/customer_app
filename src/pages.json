@@ -59,6 +59,15 @@
         },
 		{
 		    "path": "pages/demo/index"
+		},
+		{
+			"path": "pages/childArchive/index"
+		},
+		{
+			"path": "pages/siteSearch/index"
+		},
+		{
+			"path": "pages/familyManage/index"
 		}
     ],
     "subPackages": [

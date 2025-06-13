@@ -49,7 +49,7 @@ export const useTabbarStore = defineStore("tabbar", () => {
 			const firstItem = tabbarList.value[0]
 			
 			tabbarList.value.push({
-				link: '/demo',
+				link: '/pages/demo/index',
 				image: firstItem.image,
 				activeImage: firstItem.activeImage,
 				text: '测试'

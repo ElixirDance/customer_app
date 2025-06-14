@@ -8,20 +8,16 @@
     <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation>
       <view v-for="(msg, idx) in chatList" :key="idx" :class="['chat-item', msg.role]">
         <view class="avatar">
-          <image v-if="msg.role==='user'" src="/static/user.png" class="avatar-img" />
-          <image v-else src="/static/ai.png" class="avatar-img" />
+          <image v-if="msg.role === 'user'" :src="userAvatar" class="avatar-img" />
+          <image v-else :src="aiAvatar" class="avatar-img" />
         </view>
-        <view class="msg-content">
-          <text>{{ msg.content }}</text>
-        </view>
+        <view class="msg-content">{{ msg.content }}</view>
       </view>
       <view v-if="loading" class="chat-item ai">
         <view class="avatar">
-          <image src="/static/ai.png" class="avatar-img" />
+          <image :src="aiAvatar" class="avatar-img" />
         </view>
-        <view class="msg-content loading">
-          <text>正在生成回复...</text>
-        </view>
+        <view class="msg-content loading">正在生成回复...</view>
       </view>
     </scroll-view>
     <!-- 输入区 -->
@@ -32,60 +28,73 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      inputValue: '',
-      chatList: [
-        { role: 'ai', content: '您好，我是智能育儿助手，请问有什么育儿问题需要咨询？' }
-      ],
-      loading: false,
-      scrollTop: 0
-    }
-  },
-  methods: {
-    async sendMsg() {
-      const question = this.inputValue.trim()
-      if (!question || this.loading) return
-      // 医学类问题拦截
-      if (/医|药|疾病|处方|诊断|治疗|发烧|咳嗽|感冒|新冠|疫苗|用药|挂号|医院|医生/.test(question)) {
-        this.chatList.push({ role: 'ai', content: '很抱歉，医学类问题请咨询专业医生或医疗机构。' })
-        this.inputValue = ''
-        this.$nextTick(this.scrollToBottom)
-        return
-      }
-      this.chatList.push({ role: 'user', content: question })
-      this.inputValue = ''
-      this.loading = true
-      this.$nextTick(this.scrollToBottom)
-      // 模拟AI接口调用
-      try {
-        // 这里请替换为实际后端AI接口调用
-        const aiReply = await this.mockAIReply(question)
-        this.chatList.push({ role: 'ai', content: aiReply })
-      } catch (e) {
-        this.chatList.push({ role: 'ai', content: '抱歉，服务暂时不可用，请稍后再试。' })
-      }
-      this.loading = false
-      this.$nextTick(this.scrollToBottom)
-    },
-    // 模拟AI回复
-    mockAIReply(q) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve('这是AI根据您的问题和儿童行为数据生成的个性化建议示例。')
-        }, 1200)
-      })
-    },
-    scrollToBottom() {
-      this.scrollTop = 99999
-    }
+<script lang="ts" setup>
+import { ref, onMounted, nextTick } from 'vue';
+
+// 图片资源引用
+const userAvatar = ref('/static/user.png');
+const aiAvatar = ref('/static/ai.png');
+
+// 状态管理
+const inputValue = ref('');
+const chatList = ref([
+  { role: 'ai', content: '您好，我是智能育儿助手，请问有什么育儿问题需要咨询？' }
+]);
+const loading = ref(false);
+const scrollTop = ref(0);
+
+// 发送消息
+const sendMsg = async () => {
+  const question = inputValue.value.trim();
+  if (!question || loading.value) return;
+  
+  // 医学类问题拦截
+  if (/医|药|疾病|处方|诊断|治疗|发烧|咳嗽|感冒|新冠|疫苗|用药|挂号|医院|医生/.test(question)) {
+    chatList.value.push({ role: 'ai', content: '很抱歉，医学类问题请咨询专业医生或医疗机构。' });
+    inputValue.value = '';
+    nextTick(scrollToBottom);
+    return;
   }
-}
+  
+  chatList.value.push({ role: 'user', content: question });
+  inputValue.value = '';
+  loading.value = true;
+  nextTick(scrollToBottom);
+  
+  // 模拟AI接口调用
+  try {
+    const aiReply = await mockAIReply(question);
+    chatList.value.push({ role: 'ai', content: aiReply });
+  } catch (e) {
+    chatList.value.push({ role: 'ai', content: '抱歉，服务暂时不可用，请稍后再试。' });
+  }
+  
+  loading.value = false;
+  nextTick(scrollToBottom);
+};
+
+// 模拟AI回复
+const mockAIReply = (q) => {
+  return new Promise(resolve => {
+    setTimeout(() => {
+      resolve('这是AI根据您的问题和儿童行为数据生成的个性化建议示例。');
+    }, 1200);
+  });
+};
+
+// 滚动到底部
+const scrollToBottom = () => {
+  scrollTop.value = 99999;
+};
+
+// 生命周期钩子
+onMounted(() => {
+  // 组件挂载时执行的操作
+});
 </script>
 
 <style lang="scss" scoped>
+/* 样式部分与原代码保持一致，无需修改 */
 .chat-ai-container {
   display: flex;
   flex-direction: column;

@@ -7,11 +7,11 @@
           <view class="msg-time">{{formatTime(msg.time)}}</view>
           <view class="voice-row">
             <view class="avatar">
-              <image v-if="msg.role==='parent'" src="/static/parent.png" class="avatar-img" />
-              <image v-else src="/static/child.png" class="avatar-img" />
+              <image v-if="msg.role==='parent'" :src="parentAvatar" class="avatar-img" />
+              <image v-else :src="childAvatar" class="avatar-img" />
             </view>
-            <view class="voice-bubble" @tap="playVoice(msg)" :class="{playing: msg.playing}">
-              <image class="voice-icon" :src="msg.playing ? '/static/voice_playing.gif' : '/static/voice.png'" />
+            <view class="voice-bubble" @tap="() => playVoice(msg)" :class="{playing: msg.playing}">
+              <image class="voice-icon" :src="msg.playing ? playingVoiceIcon : normalVoiceIcon" />
               <text class="voice-duration">{{msg.duration}}''</text>
             </view>
           </view>
@@ -24,7 +24,7 @@
         <view v-if="recordTooShort">说话时间太短</view>
         <view v-else-if="recordCancel">松开手指，取消发送</view>
         <view v-else>
-          <image src="/static/recording.gif" style="width:60rpx;height:60rpx;" />
+          <image :src="recordingGif" style="width:60rpx;height:60rpx;" />
           正在录音...
         </view>
       </view>
@@ -43,175 +43,203 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      chatList: [
-        { role: 'parent', duration: 6, url: '', playing: false, time: '2024-06-01 14:23' },
-        { role: 'child', duration: 4, url: '', playing: false, time: '2024-06-01 14:24' }
-      ],
-      scrollTop: 0,
-      showAuthModal: false,
-      recorder: null,
-      recording: false,
-      recordStartTime: 0,
-      recordCancel: false,
-      recordTooShort: false,
-      recordAnim: false,
-      recordBtnText: '按住说话',
-      recordBtnActive: false
+<script lang='ts' setup>
+import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+
+// 图片资源引用
+const parentAvatar = ref('/static/parent.png');
+const childAvatar = ref('/static/child.png');
+const normalVoiceIcon = ref('/static/voice.png');
+const playingVoiceIcon = ref('/static/voice_playing.gif');
+const recordingGif = ref('/static/recording.gif');
+
+// 状态管理
+const chatList = ref([
+  { role: 'parent', duration: 6, url: '', playing: false, time: '2024-06-01 14:23' },
+  { role: 'child', duration: 4, url: '', playing: false, time: '2024-06-01 14:24' }
+]);
+const scrollTop = ref(0);
+const showAuthModal = ref(false);
+const recorder = ref(null);
+const recording = ref(false);
+const recordStartTime = ref(0);
+const recordCancel = ref(false);
+const recordTooShort = ref(false);
+const recordAnim = ref(false);
+const recordBtnText = ref('按住说话');
+const recordBtnActive = ref(false);
+
+// 检查录音权限
+const checkRecordAuth = async () => {
+  const sys = uni.getSystemInfoSync();
+  if (sys.platform === 'devtools' || sys.platform === 'android' || sys.platform === 'ios') {
+    // 微信小程序/APP
+    if (typeof wx !== 'undefined' && wx.getSetting) {
+      return new Promise(resolve => {
+        wx.getSetting({
+          success: (res) => {
+            if (!res.authSetting['scope.record']) {
+              showAuthModal.value = true;
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          },
+          fail: () => {
+            showAuthModal.value = true;
+            resolve(false);
+          }
+        });
+      });
     }
-  },
-  methods: {
-    // 检查录音权限
-    async checkRecordAuth() {
-      const sys = uni.getSystemInfoSync();
-      if (sys.platform === 'devtools' || sys.platform === 'android' || sys.platform === 'ios') {
-        // 微信小程序/APP
-        if (typeof wx !== 'undefined' && wx.getSetting) {
-          return new Promise(resolve => {
-            wx.getSetting({
-              success: (res) => {
-                if (!res.authSetting['scope.record']) {
-                  this.showAuthModal = true;
-                  resolve(false);
-                } else {
-                  resolve(true);
-                }
-              },
-              fail: () => {
-                this.showAuthModal = true;
-                resolve(false);
-              }
-            });
-          });
-        }
-      } else if (sys.platform === 'h5' || typeof window !== 'undefined') {
-        // H5
-        try {
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch (e) {
-          this.showAuthModal = true;
-          return false;
-        }
-      }
-      return true;
-    },
-    // 开始录音
-    async startRecord(e) {
-      if (this.recording) return;
-      const hasAuth = await this.checkRecordAuth();
-      if (!hasAuth) return;
-      this.recording = true;
-      this.recordCancel = false;
-      this.recordTooShort = false;
-      this.recordAnim = true;
-      this.recordBtnText = '松开结束';
-      this.recordBtnActive = true;
-      this.recordStartTime = Date.now();
-      // #ifdef MP-WEIXIN
-      this.recorder = wx.getRecorderManager();
-      this.recorder.start({ format: 'mp3' });
-      // #endif
-      // #ifdef H5
-      // 这里只做UI演示，实际需集成Recorder.js等库
-      // #endif
-    },
-    // 录音时手指上滑取消
-    moveRecord(e) {
-      // 判断是否上滑（以y轴为例，实际可根据页面高度动态调整）
-      if (e.touches && e.touches[0].clientY < uni.upx2px(900)) {
-        this.recordCancel = true;
-        this.recordBtnText = '松开手指，取消发送';
-      } else {
-        this.recordCancel = false;
-        this.recordBtnText = '松开结束';
-      }
-    },
-    // 停止录音并发送
-    stopRecord() {
-      if (!this.recording) return;
-      this.recording = false;
-      this.recordAnim = false;
-      this.recordBtnActive = false;
-      this.recordBtnText = '按住说话';
-      const duration = Math.round((Date.now() - this.recordStartTime) / 1000);
-      if (this.recordCancel) {
-        // 取消发送
-        uni.showToast({ title: '已取消', icon: 'none' });
-        return;
-      }
-      if (duration < 1) {
-        this.recordTooShort = true;
-        setTimeout(() => { this.recordTooShort = false; }, 1200);
-        uni.showToast({ title: '说话时间太短', icon: 'none' });
-        return;
-      }
-      // #ifdef MP-WEIXIN
-      this.recorder.stop();
-      this.recorder.onStop = (res) => {
-        this.addVoiceMsg('parent', duration, res.tempFilePath);
-      };
-      // #endif
-      // #ifdef H5
-      // 这里只做UI演示，实际需集成录音库
-      this.addVoiceMsg('parent', duration, '');
-      // #endif
-    },
-    // 取消录音
-    cancelRecord() {
-      this.recording = false;
-      this.recordAnim = false;
-      this.recordBtnActive = false;
-      this.recordBtnText = '按住说话';
-      // #ifdef MP-WEIXIN
-      if (this.recorder) this.recorder.stop();
-      // #endif
-    },
-    // 添加语音消息
-    addVoiceMsg(role, duration, url) {
-      const now = new Date();
-      const time = now.getFullYear() + '-' +
-        String(now.getMonth() + 1).padStart(2, '0') + '-' +
-        String(now.getDate()).padStart(2, '0') + ' ' +
-        String(now.getHours()).padStart(2, '0') + ':' +
-        String(now.getMinutes()).padStart(2, '0');
-      this.chatList.push({ role, duration, url, playing: false, time });
-      this.$nextTick(this.scrollToBottom);
-    },
-    // 播放语音
-    playVoice(msg) {
-      this.chatList.forEach(m => m.playing = false)
-      msg.playing = true
-      // #ifdef MP-WEIXIN
-      const innerAudioContext = wx.createInnerAudioContext()
-      innerAudioContext.src = msg.url
-      innerAudioContext.play()
-      innerAudioContext.onEnded = () => { msg.playing = false }
-      // #endif
-      // #ifdef H5
-      // 这里只做UI演示
-      setTimeout(() => { msg.playing = false }, msg.duration * 1000)
-      // #endif
-    },
-    scrollToBottom() {
-      this.scrollTop = 99999
-    },
-    closeAuthModal() {
-      this.showAuthModal = false
-    },
-    formatTime(time) {
-      // 只显示时:分
-      if (!time) return '';
-      if (time.length > 5) return time.slice(-5);
-      return time;
+  } else if (sys.platform === 'h5' || typeof window !== 'undefined') {
+    // H5
+    try {
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+    } catch (e) {
+      showAuthModal.value = true;
+      return false;
     }
   }
-}
+  return true;
+};
+
+// 开始录音
+const startRecord = async (e) => {
+  if (recording.value) return;
+  const hasAuth = await checkRecordAuth();
+  if (!hasAuth) return;
+  recording.value = true;
+  recordCancel.value = false;
+  recordTooShort.value = false;
+  recordAnim.value = true;
+  recordBtnText.value = '松开结束';
+  recordBtnActive.value = true;
+  recordStartTime.value = Date.now();
+  // #ifdef MP-WEIXIN
+  recorder.value = wx.getRecorderManager();
+  recorder.value.start({ format: 'mp3' });
+  // #endif
+  // #ifdef H5
+  // 这里只做UI演示，实际需集成Recorder.js等库
+  // #endif
+};
+
+// 录音时手指上滑取消
+const moveRecord = (e) => {
+  // 判断是否上滑（以y轴为例，实际可根据页面高度动态调整）
+  if (e.touches && e.touches[0].clientY < uni.getSystemInfoSync().windowHeight - uni.upx2px(300)) {
+    recordCancel.value = true;
+    recordBtnText.value = '松开手指，取消发送';
+  } else {
+    recordCancel.value = false;
+    recordBtnText.value = '松开结束';
+  }
+};
+
+// 停止录音并发送
+const stopRecord = () => {
+  if (!recording.value) return;
+  recording.value = false;
+  recordAnim.value = false;
+  recordBtnActive.value = false;
+  recordBtnText.value = '按住说话';
+  const duration = Math.round((Date.now() - recordStartTime.value) / 1000);
+  if (recordCancel.value) {
+    // 取消发送
+    uni.showToast({ title: '已取消', icon: 'none' });
+    return;
+  }
+  if (duration < 1) {
+    recordTooShort.value = true;
+    setTimeout(() => { recordTooShort.value = false; }, 1200);
+    uni.showToast({ title: '说话时间太短', icon: 'none' });
+    return;
+  }
+  // #ifdef MP-WEIXIN
+  recorder.value.stop();
+  recorder.value.onStop = (res) => {
+    addVoiceMsg('parent', duration, res.tempFilePath);
+  };
+  // #endif
+  // #ifdef H5
+  // 这里只做UI演示，实际需集成录音库
+  addVoiceMsg('parent', duration, '');
+  // #endif
+};
+
+// 取消录音
+const cancelRecord = () => {
+  recording.value = false;
+  recordAnim.value = false;
+  recordBtnActive.value = false;
+  recordBtnText.value = '按住说话';
+  // #ifdef MP-WEIXIN
+  if (recorder.value) recorder.value.stop();
+  // #endif
+};
+
+// 添加语音消息
+const addVoiceMsg = (role, duration, url) => {
+  const now = new Date();
+  const time = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+  chatList.value.push({ role, duration, url, playing: false, time });
+  nextTick(scrollToBottom);
+};
+
+// 播放语音
+const playVoice = (msg) => {
+  chatList.value.forEach(m => m.playing = false)
+  msg.playing = true
+  // #ifdef MP-WEIXIN
+  const innerAudioContext = wx.createInnerAudioContext()
+  innerAudioContext.src = msg.url
+  innerAudioContext.play()
+  innerAudioContext.onEnded = () => { msg.playing = false }
+  // #endif
+  // #ifdef H5
+  // 这里只做UI演示
+  setTimeout(() => { msg.playing = false }, msg.duration * 1000)
+  // #endif
+};
+
+// 滚动到底部
+const scrollToBottom = () => {
+  scrollTop.value = 99999
+};
+
+// 关闭权限提示
+const closeAuthModal = () => {
+  showAuthModal.value = false
+};
+
+// 格式化时间
+const formatTime = (time) => {
+  // 只显示时:分
+  if (!time) return '';
+  if (time.length > 5) return time.slice(-5);
+  return time;
+};
+
+// 生命周期钩子
+onMounted(() => {
+  // 组件挂载时的操作
+});
+
+onUnmounted(() => {
+  // 组件卸载时的清理操作
+  // #ifdef MP-WEIXIN
+  if (recorder.value) recorder.value.stop();
+  // #endif
+});
 </script>
 
 <style lang="scss" scoped>
+/* 样式部分与原代码保持一致，无需修改 */
 .chat-container {
   display: flex;
   flex-direction: column;

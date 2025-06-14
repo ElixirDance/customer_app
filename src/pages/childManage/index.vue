@@ -64,12 +64,13 @@ import { ref, reactive, computed, onMounted, toRaw } from 'vue';
 import { onLoad } from "@dcloudio/uni-app";
 import { formatDate } from '@/utils/format';
 import { addChild, updateChild, getChild } from '@/api/child/child';
+import type { Child } from '@/types/child/child';
 
 // 表单引用
 const formRef = ref(null);
 
 // 表单数据
-const formData = reactive({
+const formData = reactive<Child>({
   id: '',         // 档案ID，创建模式下为空，更新模式下有值
   name: '',
   birthDate: Date.now(),

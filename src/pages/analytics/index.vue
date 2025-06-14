@@ -54,148 +54,149 @@
   </view>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      assessmentData: [
-        { label: '语言', value: 85 },
-        { label: '艺术', value: 78 },
-        { label: '科学', value: 82 },
-        { label: '社会', value: 75 },
-        { label: '健康', value: 88 }
-      ],
-      emotionData: [
-        { name: '开心', count: 15, icon: '😊', color: '#FFD700' },
-        { name: '平静', count: 12, icon: '😌', color: '#98FB98' },
-        { name: '焦虑', count: 3, icon: '😰', color: '#FFA07A' },
-        { name: '生气', count: 2, icon: '😠', color: '#FF6B6B' }
-      ],
-      interventionPlan: '根据情绪分析，建议增加正面激励，在游戏互动中培养情绪管理能力。每天安排15分钟的情绪表达练习，通过角色扮演帮助孩子更好地理解和表达情绪。',
-      conversationCategories: [
-        {
-          name: '语言发展',
-          count: 25,
-          summary: '词汇量丰富，表达清晰，建议继续鼓励阅读和对话练习。'
-        },
-        {
-          name: '认知能力',
-          count: 18,
-          summary: '逻辑思维能力强，对数字和空间概念理解良好。'
-        },
-        {
-          name: '社交互动',
-          count: 20,
-          summary: '乐于分享，但在团队合作中需要更多引导。'
-        }
-      ]
+<script lang="ts" setup>
+import { ref, onMounted } from 'vue';
+
+// 响应式数据
+const assessmentData = ref([
+  { label: '语言', value: 85 },
+  { label: '艺术', value: 78 },
+  { label: '科学', value: 82 },
+  { label: '社会', value: 75 },
+  { label: '健康', value: 88 }
+]);
+
+const emotionData = ref([
+  { name: '开心', count: 15, icon: '😊', color: '#FFD700' },
+  { name: '平静', count: 12, icon: '😌', color: '#98FB98' },
+  { name: '焦虑', count: 3, icon: '😰', color: '#FFA07A' },
+  { name: '生气', count: 2, icon: '😠', color: '#FF6B6B' }
+]);
+
+const interventionPlan = ref('根据情绪分析，建议增加正面激励，在游戏互动中培养情绪管理能力。每天安排15分钟的情绪表达练习，通过角色扮演帮助孩子更好地理解和表达情绪。');
+
+const conversationCategories = ref([
+  {
+    name: '语言发展',
+    count: 25,
+    summary: '词汇量丰富，表达清晰，建议继续鼓励阅读和对话练习。'
+  },
+  {
+    name: '认知能力',
+    count: 18,
+    summary: '逻辑思维能力强，对数字和空间概念理解良好。'
+  },
+  {
+    name: '社交互动',
+    count: 20,
+    summary: '乐于分享，但在团队合作中需要更多引导。'
+  }
+]);
+
+// 绘制雷达图
+const drawRadarChart = () => {
+  const ctx = uni.createCanvasContext('radarChart');
+  const width = 320;
+  const height = 320;
+  const centerX = width / 2;
+  const centerY = height / 2;
+  const radius = Math.min(width, height) / 2 - 30;
+  const gridCount = 5; // 网格层数
+  const angleStep = (Math.PI * 2) / assessmentData.value.length;
+
+  // 绘制网格线
+  for (let i = 0; i < gridCount; i++) {
+    const currentRadius = (radius * (i + 1)) / gridCount;
+    ctx.beginPath();
+    ctx.strokeStyle = '#E0E0E0';
+    ctx.lineWidth = 1;
+
+    for (let j = 0; j < assessmentData.value.length; j++) {
+      const angle = j * angleStep - Math.PI / 2;
+      const x = centerX + currentRadius * Math.cos(angle);
+      const y = centerY + currentRadius * Math.sin(angle);
+
+      if (j === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
     }
-  },
-  onReady() {
-    this.drawRadarChart()
-  },
-  methods: {
-    drawRadarChart() {
-      const ctx = uni.createCanvasContext('radarChart', this)
-      const width = 320
-      const height = 320
-      const centerX = width / 2
-      const centerY = height / 2
-      const radius = Math.min(width, height) / 2 - 30
-      
-      // 绘制背景网格
-      const gridCount = 5 // 网格层数
-      const angleStep = (Math.PI * 2) / this.assessmentData.length
-      
-      // 绘制网格线
-      for (let i = 0; i < gridCount; i++) {
-        const currentRadius = (radius * (i + 1)) / gridCount
-        ctx.beginPath()
-        ctx.strokeStyle = '#E0E0E0'
-        ctx.lineWidth = 1
-        
-        for (let j = 0; j < this.assessmentData.length; j++) {
-          const angle = j * angleStep - Math.PI / 2
-          const x = centerX + currentRadius * Math.cos(angle)
-          const y = centerY + currentRadius * Math.sin(angle)
-          
-          if (j === 0) {
-            ctx.moveTo(x, y)
-          } else {
-            ctx.lineTo(x, y)
-          }
-        }
-        ctx.closePath()
-        ctx.stroke()
-      }
-      
-      // 绘制轴线
-      for (let i = 0; i < this.assessmentData.length; i++) {
-        const angle = i * angleStep - Math.PI / 2
-        ctx.beginPath()
-        ctx.moveTo(centerX, centerY)
-        ctx.lineTo(
-          centerX + radius * Math.cos(angle),
-          centerY + radius * Math.sin(angle)
-        )
-        ctx.strokeStyle = '#E0E0E0'
-        ctx.stroke()
-        
-        // 绘制标签
-        const labelX = centerX + (radius + 10) * Math.cos(angle)
-        const labelY = centerY + (radius + 10) * Math.sin(angle)
-        ctx.font = '12px sans-serif'
-        ctx.fillStyle = '#666'
-        ctx.textAlign = 'center'
-        ctx.textBaseline = 'middle'
-        ctx.fillText(this.assessmentData[i].label, labelX, labelY)
-      }
-      
-      // 绘制数据区域
-      ctx.beginPath()
-      for (let i = 0; i < this.assessmentData.length; i++) {
-        const angle = i * angleStep - Math.PI / 2
-        const value = this.assessmentData[i].value
-        const pointRadius = (radius * value) / 100
-        const x = centerX + pointRadius * Math.cos(angle)
-        const y = centerY + pointRadius * Math.sin(angle)
-        
-        if (i === 0) {
-          ctx.moveTo(x, y)
-        } else {
-          ctx.lineTo(x, y)
-        }
-      }
-      ctx.closePath()
-      
-      // 设置数据区域样式
-      ctx.fillStyle = 'rgba(64, 158, 255, 0.2)'
-      ctx.fill()
-      ctx.strokeStyle = '#409EFF'
-      ctx.lineWidth = 2
-      ctx.stroke()
-      
-      // 绘制数据点
-      for (let i = 0; i < this.assessmentData.length; i++) {
-        const angle = i * angleStep - Math.PI / 2
-        const value = this.assessmentData[i].value
-        const pointRadius = (radius * value) / 100
-        const x = centerX + pointRadius * Math.cos(angle)
-        const y = centerY + pointRadius * Math.sin(angle)
-        
-        ctx.beginPath()
-        ctx.arc(x, y, 4, 0, Math.PI * 2)
-        ctx.fillStyle = '#409EFF'
-        ctx.fill()
-      }
-      
-      ctx.draw()
+    ctx.closePath();
+    ctx.stroke();
+  }
+
+  // 绘制轴线
+  for (let i = 0; i < assessmentData.value.length; i++) {
+    const angle = i * angleStep - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.lineTo(
+      centerX + radius * Math.cos(angle),
+      centerY + radius * Math.sin(angle)
+    );
+    ctx.strokeStyle = '#E0E0E0';
+    ctx.stroke();
+
+    // 绘制标签
+    const labelX = centerX + (radius + 10) * Math.cos(angle);
+    const labelY = centerY + (radius + 10) * Math.sin(angle);
+    ctx.font = '12px sans-serif';
+    ctx.fillStyle = '#666';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(assessmentData.value[i].label, labelX, labelY);
+  }
+
+  // 绘制数据区域
+  ctx.beginPath();
+  for (let i = 0; i < assessmentData.value.length; i++) {
+    const angle = i * angleStep - Math.PI / 2;
+    const value = assessmentData.value[i].value;
+    const pointRadius = (radius * value) / 100;
+    const x = centerX + pointRadius * Math.cos(angle);
+    const y = centerY + pointRadius * Math.sin(angle);
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
     }
   }
-}
+  ctx.closePath();
+
+  // 设置数据区域样式
+  ctx.fillStyle = 'rgba(64, 158, 255, 0.2)';
+  ctx.fill();
+  ctx.strokeStyle = '#409EFF';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 绘制数据点
+  for (let i = 0; i < assessmentData.value.length; i++) {
+    const angle = i * angleStep - Math.PI / 2;
+    const value = assessmentData.value[i].value;
+    const pointRadius = (radius * value) / 100;
+    const x = centerX + pointRadius * Math.cos(angle);
+    const y = centerY + pointRadius * Math.sin(angle);
+
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = '#409EFF';
+    ctx.fill();
+  }
+
+  ctx.draw();
+};
+
+// 生命周期钩子
+onMounted(() => {
+  drawRadarChart();
+});
 </script>
 
 <style lang="scss" scoped>
+/* 样式与原组件一致，无需修改 */
 .analytics-container {
   padding: 20rpx;
   background-color: #f5f6fa;

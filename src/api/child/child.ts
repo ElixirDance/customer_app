@@ -1,8 +1,8 @@
 import request from "@/utils/request";
-import type { AddOrUpdateChildParams, ChildFilterParams, ChildFormResult } from "@/types/child/child.d";
+import type { AddOrUpdateChildParams, ChildFilterParams, ChildFormResult, ChildsFormResult } from "@/types/child/child.d";
 
 export const getChilds = (params = {}) => {
-	return request<ChildFormResult>({
+	return request<ChildsFormResult>({
 	    url: "child/childs",
 	    method: "get",
 	    params

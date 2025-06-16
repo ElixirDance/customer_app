@@ -2,14 +2,14 @@
     <view class="tabbar-box">
         <view class="tabbar-container">
             <view class="tabbar">
-                <view class="tabbar-item" v-for="(item, index) in tabbarStore.tabbarList" :key="index" @click="handleTabbar(item, index)">
+                <view class="tabbar-item" v-for="(item, index) in tabbarStore.tabbarList" :key="index" @click="handleTabbar(item, index)" v-show="item.isMall === tabbarStore.isMallPage">
                     <view class="tabbar-icon">
                         <image
                             class="tabbar-icon-img"
                             :src="tabbarStore.currentActiveValue === index ? imageFormat(item.activeImage) : imageFormat(item.image)"
                         />
                     </view>
-                    <view class="tabbar-text" :class="{ active: tabbarStore.currentActiveValue === index }">{{ $t(item.text) }}</view>
+                    <view class="tabbar-text" :class="{ active: tabbarStore.currentActiveValue === index }">{{ $t(item.text)  }} {{tabbarStore.currentActiveValue  }} -{{index}}</view>
                 </view>
             </view>
         </view>

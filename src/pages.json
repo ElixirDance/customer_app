@@ -7,23 +7,23 @@
             }
         },
         {
-            "path": "pages/search/index",
+            "path": "pages/mall/search/index",
             "style": {}
         },
         {
-            "path": "pages/search/result",
+            "path": "pages/mall/search/result",
             "style": {}
         },
         {
-            "path": "pages/productCate/index",
+            "path": "pages/mall/productCate/index",
             "style": {}
         },
         {
-            "path": "pages/cart/index",
+            "path": "pages/mall/cart/index",
             "style": {}
         },
         {
-            "path": "pages/cart/cartJump",
+            "path": "pages/mall/cart/cartJump",
             "style": {}
         },
         {
@@ -35,15 +35,15 @@
             "style": {}
         },
         {
-            "path": "pages/address/list",
+            "path": "pages/mall/address/list",
             "style": {}
         },
         {
-            "path": "pages/address/editRegion",
+            "path": "pages/mall/address/editRegion",
             "style": {}
         },
         {
-            "path": "pages/seckill/list"
+            "path": "pages/mall/seckill/list"
         },
         {
             "path": "pages/404"
@@ -52,7 +52,7 @@
             "path": "pages/webviewPage/index"
         },
         {
-            "path": "pages/exchange/list"
+            "path": "pages/mall/exchange/list"
         },
         {
             "path": "pages/reset/index"
@@ -70,8 +70,8 @@
             "path": "pages/familyManage/index"
         },
         {
-			"path": "pages/parentManage/index"
-		},
+            "path": "pages/parentManage/index"
+        },
         {
             "path": "pages/analytics/index"
         },
@@ -80,6 +80,12 @@
         },
         {
             "path": "pages/chat/index"
+        },
+        {
+            "path": "pages/mall/index/index",
+            "style": {
+                "enablePullDownRefresh": true
+            }
         }
     ],
     "subPackages": [
@@ -95,7 +101,7 @@
             ]
         },
         {
-            "root": "pages/customPage",
+            "root": "pages/mall/customPage",
             "pages": [
                 {
                     "path": "index"
@@ -103,7 +109,7 @@
             ]
         },
         {
-            "root": "pages/shop",
+            "root": "pages/mall/shop",
             "pages": [
                 {
                     "path": "index"
@@ -117,7 +123,7 @@
             ]
         },
         {
-            "root": "pages/article",
+            "root": "pages/mall/article",
             "pages": [
                 {
                     "path": "issue/list"
@@ -134,7 +140,7 @@
             ]
         },
         {
-            "root": "pages/product",
+            "root": "pages/mall/product",
             "pages": [
                 {
                     "path": "index",
@@ -163,7 +169,7 @@
             ]
         },
         {
-            "root": "pages/coupon",
+            "root": "pages/mall/coupon",
             "pages": [
                 {
                     "path": "index",
@@ -192,7 +198,7 @@
             ]
         },
         {
-            "root": "pages/order",
+            "root": "pages/mall/order",
             "pages": [
                 {
                     "path": "check",
@@ -234,7 +240,7 @@
             ]
         },
         {
-            "root": "pages/salesman",
+            "root": "pages/mall/salesman",
             "pages": [
                 {
                     "path": "index",
@@ -407,7 +413,7 @@
             ]
         },
         {
-            "root": "pages/user",
+            "root": "pages/mall/user",
             "pages": [
                 {
                     "path": "index",

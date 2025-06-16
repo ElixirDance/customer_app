@@ -4,7 +4,28 @@
             <previewTip></previewTip>
         </template>
 
-       new index
+        <template v-if="loading">
+            <view class="index_empty">
+                <image lazy-load :src="staticResource('common/index_empty.png')" mode="widthFix"></image>
+            </view>
+        </template>
+        <template v-else>
+            <view class="index">
+                <view class="decorate-page-window">
+                    <modules :modules="modulesData" :scrollTop="scrollTop" @load-goods-list="loadGoodsList"></modules>
+                    <!-- 加载商品模块 -->
+                    <template v-if="currentCategoryId > 0 && commodityList.length > 0">
+                        <masonry :commodityList="commodityList"></masonry>
+
+                        <template v-if="!bottomLoading && commodityList.length === 0">
+                            <view class="empty-box">
+                                <up-empty :icon="staticResource('salesman/no_order.png')" :text="$t('暂无数据')"></up-empty>
+                            </view>
+                        </template>
+                    </template>
+                </view>
+            </view>
+        </template>
 
         <tig-back-top :scrollTop="scrollTop"></tig-back-top>
     </tig-layout>
@@ -111,7 +132,7 @@ onShow(() => {
             });
         }, 20);
     }
-    uni.hideTabBar();
+    // uni.hideTabBar();
 });
 
 onShareAppMessage((res) => {

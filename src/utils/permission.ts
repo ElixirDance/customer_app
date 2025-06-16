@@ -8,6 +8,7 @@ const whiteList = [
     "/pages/register/index",
     "/pages/register/agreement",
     "/pages/index/index",
+    "/pages/mall/index/index",
     "/pages/mall/search/index",
     "/pages/mall/search/result",
     "/pages/mall/productCate/index",

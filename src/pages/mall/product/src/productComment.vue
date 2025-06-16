@@ -4,7 +4,7 @@
             <view class="txt">
                 {{ $t("评价") }}<text>({{ comment.total ?? 0 }})</text>
             </view>
-            <view class="more" @click="toPage(`/pages/product/comment?id=${productId}`)">
+            <view class="more" @click="toPage(`/pages/mall/product/comment?id=${productId}`)">
                 {{ $t("好评") }}<text>{{ comment.goodPercent ?? 0 }}%</text>
                 <uni-icons type="right" size="16" color="#bfbfbf"></uni-icons>
             </view>
@@ -41,11 +41,11 @@
         </block>
 
         <view class="comment-btn-box flex align-center justify-around">
-            <view class="btn flex align-center" @click="toPage(`/pages/product/comment?id=${productId}`)">
+            <view class="btn flex align-center" @click="toPage(`/pages/mall/product/comment?id=${productId}`)">
                 <uni-icons type="chat" size="20" color="#333"></uni-icons>
                 <text>{{ $t("全部评价") }}({{ comment.total ?? 0 }})</text>
             </view>
-            <view class="btn flex align-center" @click="toPage(`/pages/product/consult?id=${productId}`)">
+            <view class="btn flex align-center" @click="toPage(`/pages/mall/product/consult?id=${productId}`)">
                 <uni-icons type="chatboxes" size="20" color="#333"></uni-icons>
                 <text>{{ $t("购买咨询") }}({{ consultationTotal ?? 0 }})</text>
             </view>

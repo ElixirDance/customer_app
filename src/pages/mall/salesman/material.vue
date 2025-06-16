@@ -53,7 +53,7 @@
                                     <view class="item-tip">{{ $t("长按图片保存到相册") }}</view>
                                     <view class="item-product" v-if="item.product">
                                         <view class="item-product-text">{{ $t("商品：") }}</view>
-                                        <view class="item-product-img" @click="handleLink(`/pages/product/index?id=${item.productId}`)">
+                                        <view class="item-product-img" @click="handleLink(`/pages/mall/product/index?id=${item.productId}`)">
                                             <tig-image :src="item.product.picThumb"></tig-image>
                                         </view>
                                     </view>
@@ -255,7 +255,7 @@ const qrcodeSuccess = (tempFilePath: string) => {
 const link = ref("");
 const getLink = (data: AnyObject) => {
     link.value = data.productId
-        ? `${configStore.baseInfo.h5Domain}/pages/product/index?id=${data.productId}&salesmanId=${userInfo?.salesman?.salesmanId}`
+        ? `${configStore.baseInfo.h5Domain}/pages/mall/product/index?id=${data.productId}&salesmanId=${userInfo?.salesman?.salesmanId}`
         : configStore.baseInfo.h5Domain;
     nextTick(() => {
         qrcodeRef.value?.drawQrcode();

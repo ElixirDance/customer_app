@@ -6,7 +6,7 @@
                 <view class="withdraw-account__main">
                     <view class="withdraw-account__label">{{ $t("到账账户") }}</view>
                     <view class="withdraw-account__content">
-                        <view class="withdraw-account__account" @click="goPages('/pages/user/account/cardManagement/list')">
+                        <view class="withdraw-account__account" @click="goPages('/pages/mall/user/account/cardManagement/list')">
                             <text>{{ $t("请添加") }}</text>
                         </view>
                         <up-icon name="arrow-right" size="12"></up-icon>
@@ -42,9 +42,9 @@
                 >
             </view>
             <view class="withdraw-links">
-                <view class="withdraw-links__question" @click="goPages('/pages/salesman/withdrawHelp')">{{ $t("相关问题") }}</view>
+                <view class="withdraw-links__question" @click="goPages('/pages/mall/salesman/withdrawHelp')">{{ $t("相关问题") }}</view>
                 <view class="withdraw-links__divider"></view>
-                <view class="withdraw-links__record" @click="goPages('/pages/salesman/withdrawRecordList')">{{ $t("提现记录") }}</view>
+                <view class="withdraw-links__record" @click="goPages('/pages/mall/salesman/withdrawRecordList')">{{ $t("提现记录") }}</view>
             </view>
         </view>
     </tig-layout>
@@ -117,7 +117,7 @@ const toWithdraw = () => {
 };
 const __updateRechargeOrder = async (data: object) => {
     uni.navigateTo({
-        url: `/pages/order/pay?orderId=1&type=recharge`
+        url: `/pages/mall/order/pay?orderId=1&type=recharge`
     });
 };
 

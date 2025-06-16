@@ -47,7 +47,7 @@
                     label="微信二维码"
                     labelWidth="100"
                 >
-                    <view class="go-upload" @click="goPages('/pages/salesman/upQrcode')">
+                    <view class="go-upload" @click="goPages('/pages/mall/salesman/upQrcode')">
                         <view>去上传</view>
                         <view class="iconfont icon-xiangyou"></view>
                     </view>

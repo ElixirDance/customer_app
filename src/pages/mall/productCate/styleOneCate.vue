@@ -40,7 +40,7 @@
                                             <block v-for="(hot, index) in hotCat" :key="index">
                                                 <navigator
                                                     hover-class="none"
-                                                    :url="'/pages/search/result?categoryId=' + hot.categoryId"
+                                                    :url="'/pages/mall/search/result?categoryId=' + hot.categoryId"
                                                     class="item acea-row row-column row-middle"
                                                 >
                                                     <view class="picture">
@@ -57,7 +57,7 @@
                                         <view class="title acea-row row-center-wrapper">
                                             <navigator
                                                 hover-class="none"
-                                                :url="'/pages/search/result?categoryId=' + cat.categoryId"
+                                                :url="'/pages/mall/search/result?categoryId=' + cat.categoryId"
                                                 class="item acea-row row-column row-middle"
                                             >
                                                 <view class="name">{{ cat.categoryName }}</view>
@@ -67,7 +67,7 @@
                                             <block v-for="(childCatItem, index1) in cat.children" :key="index1">
                                                 <navigator
                                                     hover-class="none"
-                                                    :url="'/pages/search/result?categoryId=' + childCatItem.categoryId"
+                                                    :url="'/pages/mall/search/result?categoryId=' + childCatItem.categoryId"
                                                     class="item acea-row row-column row-middle"
                                                 >
                                                     <view class="picture" v-if="childCatItem.categoryPic">

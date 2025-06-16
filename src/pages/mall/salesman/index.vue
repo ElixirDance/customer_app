@@ -2,7 +2,7 @@
     <tig-layout>
         <tig-pull-refresh :scrollTop="scrollTop" ref="refreshRef" @load="handleRefresh">
             <view class="user-panel-block">
-                <view class="user-info" @click="goPages('/pages/salesman/personalInfo')">
+                <view class="user-info" @click="goPages('/pages/mall/salesman/personalInfo')">
                     <view class="user-info__avatar salesman-avatar">
                         <tig-image
                             v-if="member.avatar"
@@ -18,7 +18,7 @@
                     </view>
                     <up-icon name="arrow-right" color="#c8c9cc" size="16"></up-icon>
                 </view>
-                <view class="level-panel" @click="goPages('/pages/salesman/level')" v-if="salesmanData.level && salesmanData.salesmanConfig.level.length > 1">
+                <view class="level-panel" @click="goPages('/pages/mall/salesman/level')" v-if="salesmanData.level && salesmanData.salesmanConfig.level.length > 1">
                     <view class="upgrade-group">
                         <view class="van-image">
                             <image :src="staticResource('salesman/uplevel.png')" class="van-image__img" />
@@ -68,7 +68,7 @@
                 </view>
                 <block v-if="showDataDetail">
                     <view class="detail-data-panel van-grid" v-if="salesmanData.order">
-                        <view class="van-grid-item" @click="goPages('/pages/salesman/orderPromote')">
+                        <view class="van-grid-item" @click="goPages('/pages/mall/salesman/orderPromote')">
                             <view class="van-grid-item__content">
                                 <view class="detail-data-panel-item">
                                     <view class="detail-data-panel-item__content">
@@ -78,7 +78,7 @@
                                 </view>
                             </view>
                         </view>
-                        <view class="van-grid-item" @click="goPages('/pages/salesman/orderPromote')">
+                        <view class="van-grid-item" @click="goPages('/pages/mall/salesman/orderPromote')">
                             <view class="van-grid-item__content">
                                 <view class="detail-data-panel-item">
                                     <view class="detail-data-panel-item__content">
@@ -110,7 +110,7 @@
                         </view>
                     </view>
                 </block>
-                <view class="cash-block" @click="goPages('/pages/user/account/index')">
+                <view class="cash-block" @click="goPages('/pages/mall/user/account/index')">
                     <view role="button" tabindex="0" class="van-cell van-cell--clickable">
                         <view class="van-cell__title">
                             <text>{{ $t("可提现金额") }}({{ $t("元") }})</text>
@@ -139,7 +139,7 @@
                 </view>
                 <view class="promotion-content van-grid">
                     <view class="promotion-item van-grid-item">
-                        <view class="van-grid-item__content van-grid-item__content--horizontal van-hairline" @click="goPages('/pages/salesman/list')">
+                        <view class="van-grid-item__content van-grid-item__content--horizontal van-hairline" @click="goPages('/pages/mall/salesman/list')">
                             <view>
                                 <view class="promotion-item__title">{{ $t("推广商品") }}</view>
                                 <view class="promotion-item__desc">{{ $t("佣金赚不够") }}</view>
@@ -149,7 +149,7 @@
                             </view>
                         </view>
                     </view>
-                    <view class="promotion-item van-grid-item" @click="goPages('/pages/salesman/portalPoster')">
+                    <view class="promotion-item van-grid-item" @click="goPages('/pages/mall/salesman/portalPoster')">
                         <view class="van-grid-item__content van-grid-item__content--horizontal van-hairline">
                             <view>
                                 <view class="promotion-item__title">{{ $t("推广海报") }}</view>
@@ -171,7 +171,7 @@
                             </view>
                         </view>
                     </view> -->
-                    <view class="promotion-item van-grid-item" @click="goPages('/pages/salesman/material')">
+                    <view class="promotion-item van-grid-item" @click="goPages('/pages/mall/salesman/material')">
                         <view class="van-grid-item__content van-grid-item__content--horizontal van-hairline">
                             <view>
                                 <view class="promotion-item__title">{{ $t("素材中心") }}</view>
@@ -200,7 +200,7 @@
                             <view class="operation-item-text">销售商机</view>
                         </view>
                     </view> -->
-                    <view class="van-grid-item" style="flex-basis: 25%" @click="goPages('/pages/salesman/notifyCenter')">
+                    <view class="van-grid-item" style="flex-basis: 25%" @click="goPages('/pages/mall/salesman/notifyCenter')">
                         <view class="van-grid-item__content van-grid-item__content--center">
                             <image
                                 style="height: 100%; width: 100%"
@@ -209,7 +209,7 @@
                             <view class="operation-item-text">{{ $t("赚钱攻略") }}</view>
                         </view>
                     </view>
-                    <view class="van-grid-item" style="flex-basis: 25%" @click="goPages('/pages/salesman/businessCard')">
+                    <view class="van-grid-item" style="flex-basis: 25%" @click="goPages('/pages/mall/salesman/businessCard')">
                         <view class="van-grid-item__content van-grid-item__content--center">
                             <image
                                 style="height: 30px; width: 100%"

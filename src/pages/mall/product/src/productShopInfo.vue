@@ -70,7 +70,7 @@ const cancelCollect = async () => {
 };
 const handleToShop = () => {
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${props.shopInfo.shopId}`
+        url: `/pages/mall/shop/index?shopId=${props.shopInfo.shopId}`
     });
 };
 </script>

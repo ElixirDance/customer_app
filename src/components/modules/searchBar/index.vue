@@ -47,7 +47,7 @@ const allFormat = computed(() => {
 
 const search = () => {
     uni.navigateTo({
-        url: "/pages/search/index"
+        url: "/pages/mall/search/index"
     });
 };
 </script>

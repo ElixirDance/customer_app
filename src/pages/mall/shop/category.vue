@@ -65,18 +65,18 @@ const __getShopCategory = async () => {
 
 const handleToSearch = () => {
     uni.navigateTo({
-        url: `/pages/search/index?shopId=${shopId.value}`
+        url: `/pages/mall/search/index?shopId=${shopId.value}`
     });
 };
 
 const handleToSearchResult = (shopCategoryId: number) => {
     if (shopCategoryId > 0) {
         uni.navigateTo({
-            url: `/pages/search/result?shopId=${shopId.value}&shopCategoryId=${shopCategoryId}`
+            url: `/pages/mall/search/result?shopId=${shopId.value}&shopCategoryId=${shopCategoryId}`
         });
     } else {
         uni.navigateTo({
-            url: `/pages/search/result?shopId=${shopId.value}`
+            url: `/pages/mall/search/result?shopId=${shopId.value}`
         });
     }
 };

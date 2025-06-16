@@ -414,13 +414,13 @@ const handleCancelOrder = (id: number) => {
 
 const handlePay = (id: number) => {
     uni.navigateTo({
-        url: `/pages/order/pay?orderId=${id}`
+        url: `/pages/mall/order/pay?orderId=${id}`
     });
 };
 
 const handleToShop = (id: number) => {
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${id}`
+        url: `/pages/mall/shop/index?shopId=${id}`
     });
 };
 
@@ -448,24 +448,24 @@ const handleConfirmReceipt = (id: number) => {
 const handleAfterSale = (itemId: null | number) => {
     if (itemId) {
         uni.navigateTo({
-            url: `/pages/user/afterSale/edit?itemId=${itemId}&orderId=${orderInfo.value.orderId}`
+            url: `/pages/mall/user/afterSale/edit?itemId=${itemId}&orderId=${orderInfo.value.orderId}`
         });
     } else {
         uni.navigateTo({
-            url: `/pages/user/afterSale/edit?orderId=${orderInfo.value.orderId}`
+            url: `/pages/mall/user/afterSale/edit?orderId=${orderInfo.value.orderId}`
         });
     }
 };
 
 const handleAfterSaleDetail = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/afterSale/info?id=${id}`
+        url: `/pages/mall/user/afterSale/info?id=${id}`
     });
 };
 
 const handleLink = (id: number) => {
     uni.navigateTo({
-        url: `/pages/product/index?id=${id}`
+        url: `/pages/mall/product/index?id=${id}`
     });
 };
 

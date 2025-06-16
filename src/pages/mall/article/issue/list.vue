@@ -14,7 +14,7 @@
             <view class="news-list">
                 <template v-if="articleList.length">
                     <view class="news-item" v-for="article in articleList" :key="article.articleId">
-                        <view class="pic-desc" @click="goPages(`/pages/article/issue/detail?id=${article.articleId}`)">
+                        <view class="pic-desc" @click="goPages(`/pages/mall/article/issue/detail?id=${article.articleId}`)">
                             <view class="news-left" :class="{ 'w-100': !article.articleThumb }">
                                 <view class="pd-title" :title="article.articleTitle">
                                     <text class="yin_agn" v-if="article.articleTag">{{ $t("新闻资讯") }}</text>

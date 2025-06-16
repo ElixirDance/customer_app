@@ -31,7 +31,7 @@
                             role="button"
                             tabindex="0"
                             class="van-cell van-cell--clickable user-info-card--cell-wrap"
-                            @click="handleLink(`/pages/salesman/businessCardExternal`)"
+                            @click="handleLink(`/pages/mall/salesman/businessCardExternal`)"
                         >
                             <view class="van-cell__title gray-color">
                                 <span>{{ $t("对外名片") }}</span>

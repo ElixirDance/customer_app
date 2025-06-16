@@ -21,22 +21,22 @@
                         <template v-else>
                             <view class="acea-row row-middle info">
                                 <template v-if="isB2B()">
-                                    <view class="auth" @click="goPages('/pages/user/userCertification/index')" v-if="member.isCompanyAuth">
+                                    <view class="auth" @click="goPages('/pages/mall/user/userCertification/index')" v-if="member.isCompanyAuth">
                                         <image :src="staticResource('product/authenticated.svg')"></image>
                                     </view>
-                                    <view class="auth" @click="goPages('/pages/user/userCertification/index')" v-else>
+                                    <view class="auth" @click="goPages('/pages/mall/user/userCertification/index')" v-else>
                                         <view class="unverified" :style="`background-image: ${unverifiedBg};`"></view>
                                     </view>
                                 </template>
                                 <view class="name line1">{{ member.nickname || member.username }}</view>
                                 <template v-if="member?.showSign">
-                                    <view class="acea-row qiandao" @click="goPages('/pages/user/sign/index')">
+                                    <view class="acea-row qiandao" @click="goPages('/pages/mall/user/sign/index')">
                                         <view class="iconfont icon-qiandao"></view>
                                         <view class>{{ $t("签到有礼") }}</view>
                                     </view>
                                 </template>
                             </view>
-                            <view class="logo acea-row row-middle" @click="isPro() && goRankPages('/pages/user/levelCenter/index')">
+                            <view class="logo acea-row row-middle" @click="isPro() && goRankPages('/pages/mall/user/levelCenter/index')">
                                 <template v-if="isPro()">
                                     <image class="vip_logo" :src="member?.rankLogo" mode="scaleToFill" />
                                 </template>
@@ -44,33 +44,33 @@
                             </view>
                         </template>
                     </view>
-                    <view class="iconfont icon-shezhi" @click="goPages('/pages/user/profile/index')"></view>
+                    <view class="iconfont icon-shezhi" @click="goPages('/pages/mall/user/profile/index')"></view>
                 </view>
                 <view class="user_top_group">
-                    <view class="item" @click="goPages('/pages/user/collectProduct/index')">
+                    <view class="item" @click="goPages('/pages/mall/user/collectProduct/index')">
                         <view class="tit">
                             {{ $t("商品收藏") }}
                             <text class="txt">{{ orderNum.productCollect >= 0 ? orderNum.productCollect : "--" }}</text>
                         </view>
                     </view>
-                    <view class="item" v-if="isMerchant()" @click="goPages('/pages/user/collectionShop/index')">
+                    <view class="item" v-if="isMerchant()" @click="goPages('/pages/mall/user/collectionShop/index')">
                         <view class="tit">
                             {{ $t("店铺关注") }}
                             <text class="txt">{{ orderNum.shopCollect >= 0 ? orderNum.shopCollect : "--" }}</text>
                         </view>
                     </view>
-                    <view class="item" @click="goPages('/pages/user/comment/list')" v-if="layoutRef && layoutRef.isZh">
+                    <view class="item" @click="goPages('/pages/mall/user/comment/list')" v-if="layoutRef && layoutRef.isZh">
                         <view class="tit">
                             {{ $t("待评价") }}
                             <text class="txt">{{ orderNum.awaitComment >= 0 ? orderNum.awaitComment : "--" }}</text>
                         </view>
                     </view>
-                    <view class="item" @click="goPages('/pages/user/historyProduct/index')">
+                    <view class="item" @click="goPages('/pages/mall/user/historyProduct/index')">
                         <view class="tit">{{ $t("浏览记录") }} </view>
                     </view>
                 </view>
                 <!-- <view class="member-info__level-wrapper" v-if="false">
-                            <view class="member-info__level-1" @click="goPages('/pages/user/ranks/index')">
+                            <view class="member-info__level-1" @click="goPages('/pages/mall/user/ranks/index')">
                                 <view class="name">{{ $t("去看看我的VIP特权") }}</view>
                                 <view class="level"><text class="iconfont icon-xiangyou"></text></view>
                             </view>
@@ -80,13 +80,13 @@
                 <view class="list-group my-order">
                     <view class="title acea-row row-between-wrapper">
                         <view class="">{{ $t("我的订单") }}</view>
-                        <view class="more" @click="goPages('/pages/user/order/list')">
+                        <view class="more" @click="goPages('/pages/mall/user/order/list')">
                             <view>{{ $t("全部订单") }}</view>
                             <view class="iconfont icon-xiangyou"></view>
                         </view>
                     </view>
                     <view class="wrap">
-                        <view class="li" @click="goPages('/pages/user/order/list?type=awaitPay')">
+                        <view class="li" @click="goPages('/pages/mall/user/order/list?type=awaitPay')">
                             <template v-if="orderNum.awaitPay > 0">
                                 <uni-badge class="badgecolor" :text="orderNum.awaitPay" absolute="rightTop" size="small">
                                     <text class="iconfont icon-daifukuan"></text>
@@ -99,7 +99,7 @@
                                 <view class="txt">{{ $t("待付款") }}</view>
                             </template>
                         </view>
-                        <view class="li" @click="goPages('/pages/user/order/list?type=awaitReceived')">
+                        <view class="li" @click="goPages('/pages/mall/user/order/list?type=awaitReceived')">
                             <template v-if="orderNum.awaitReceived > 0">
                                 <uni-badge class="badgecolor" :text="orderNum.awaitReceived" absolute="rightTop" size="small">
                                     <text class="iconfont icon-daishouhuo1"></text>
@@ -111,7 +111,7 @@
                                 <view class="txt">{{ $t("待收货") }}</view>
                             </template>
                         </view>
-                        <view class="li" @click="goPages('/pages/user/order/list?type=awaitComment')">
+                        <view class="li" @click="goPages('/pages/mall/user/order/list?type=awaitComment')">
                             <template v-if="orderNum.awaitComment > 0">
                                 <uni-badge class="badgecolor" :text="orderNum.awaitComment" absolute="rightTop" size="small">
                                     <text class="iconfont icon-pingjia"></text>
@@ -123,7 +123,7 @@
                                 <view class="txt">{{ $t("待评价") }}</view>
                             </template>
                         </view>
-                        <view class="li" @click="goPages('/pages/user/afterSale/list')">
+                        <view class="li" @click="goPages('/pages/mall/user/afterSale/list')">
                             <text class="iconfont icon-shouhou1"></text>
                             <view class="txt">{{ $t("退换 / 售后") }}</view>
                             <text class="counts" v-if="count.returnCount > 0">{{ count.returnCount }}</text>
@@ -133,21 +133,21 @@
                 <view class="list-group my-wallet">
                     <view class="title acea-row row-between-wrapper">
                         <view class="">{{ $t("我的钱包") }}</view>
-                        <view class="more" @click="goPages('/pages/user/account/index')">
+                        <view class="more" @click="goPages('/pages/mall/user/account/index')">
                             <view>{{ $t("进入钱包") }}</view>
                             <view class="iconfont icon-xiangyou"></view>
                         </view>
                     </view>
                     <view class="wrap">
-                        <view class="li" @click="goPages('/pages/user/account/index')">
+                        <view class="li" @click="goPages('/pages/mall/user/account/index')">
                             <text class="num">{{ Number(member.totalBalance) >= 0 ? member.totalBalance : 0 }}</text>
                             <view class="txt">{{ $t("余额") }}</view>
                         </view>
-                        <view class="li" @click="goPages('/pages/coupon/index?type=2')">
+                        <view class="li" @click="goPages('/pages/mall/coupon/index?type=2')">
                             <text class="num">{{ member.coupon >= 0 ? member.coupon : 0 }}</text>
                             <view class="txt">{{ $t("优惠券") }}</view>
                         </view>
-                        <view class="li" @click="goPages('/pages/user/point/detail')">
+                        <view class="li" @click="goPages('/pages/mall/user/point/detail')">
                             <text class="num">{{ member.points >= 0 ? member.points : 0 }}</text>
                             <view class="txt">{{ $t("积分") }}</view>
                         </view>

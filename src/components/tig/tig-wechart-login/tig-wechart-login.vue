@@ -109,7 +109,7 @@ const getWechatInfo = async (code: string) => {
         //跳转绑定手机页面
         uni.setStorageSync("openData", result.openData);
         uni.navigateTo({
-            url: "/pages/user/bindMobilePhone/index"
+            url: "/pages/mall/user/bindMobilePhone/index"
         });
     }
 };

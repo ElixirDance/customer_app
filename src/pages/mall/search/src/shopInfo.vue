@@ -1,13 +1,13 @@
 <template>
     <view class="shop-info-box" v-if="shopInfo && Object.keys(shopInfo).length > 0">
         <view class="shop-info">
-            <view class="shop-title" @click="handleLink(`/pages/shop/index?shopId=${shopInfo.shopId}`)">
+            <view class="shop-title" @click="handleLink(`/pages/mall/shop/index?shopId=${shopInfo.shopId}`)">
                 <view class="shop-logo">
                     <tig-image :src="shopInfo.shopLogo"></tig-image>
                 </view>
                 <view class="shop-title-text line1">{{ shopInfo.shopTitle }} </view>
                 <view class="shop-btn">
-                    <tig-button class="btn" :plain="true" :plainMainColor="true" @click="handleLink(`/pages/shop/index?shopId=${shopInfo.shopId}`)">
+                    <tig-button class="btn" :plain="true" :plainMainColor="true" @click="handleLink(`/pages/mall/shop/index?shopId=${shopInfo.shopId}`)">
                         {{ $t("进店") }}
                     </tig-button>
                 </view>
@@ -20,7 +20,7 @@
                 <scroll-view scroll-x="true">
                     <view class="shop-product-scroll">
                         <template v-for="item in shopInfo.listingProduct" :key="item.productId">
-                            <view class="shop-product-image" @click="handleLink(`/pages/product/index?id=${item.productId}`)">
+                            <view class="shop-product-image" @click="handleLink(`/pages/mall/product/index?id=${item.productId}`)">
                                 <tig-image :src="item.picUrl"></tig-image>
                                 <view class="product-price">
                                     <format-price

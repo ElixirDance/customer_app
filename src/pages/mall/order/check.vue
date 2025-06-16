@@ -303,12 +303,12 @@ const submitOrder = async () => {
         const result = await orderSubmit(formState);
         if (result.returnType === 2) {
             redirect({
-                url: `/pages/user/order/list`,
+                url: `/pages/mall/user/order/list`,
                 mode: "redirectTo"
             });
         } else {
             redirect({
-                url: `/pages/order/pay?orderId=${result.orderId}`,
+                url: `/pages/mall/order/pay?orderId=${result.orderId}`,
                 mode: "redirectTo"
             });
         }
@@ -320,7 +320,7 @@ const submitOrder = async () => {
         });
         setTimeout(() => {
             redirect({
-                url: `/pages/cart/index`,
+                url: `/pages/mall/cart/index`,
                 mode: "redirectTo"
             });
         }, 1500);
@@ -354,7 +354,7 @@ const initPageData = async () => {
         });
         setTimeout(() => {
             redirect({
-                url: `/pages/cart/index`,
+                url: `/pages/mall/cart/index`,
                 mode: "redirectTo"
             });
         }, 1500);

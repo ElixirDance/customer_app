@@ -44,7 +44,7 @@
                             <view class="item-content" :style="allFormat.goodsPadding">
                                 <view class="item-con">
                                     <view class="item-photo">
-                                        <navigator :url="'/pages/product/index?id=' + item.productId" class="item-image-a">
+                                        <navigator :url="'/pages/mall/product/index?id=' + item.productId" class="item-image-a">
                                             <tig-image :src="item.picThumb" mode="widthFix"></tig-image>
                                         </navigator>
                                         <view :class="'cap-seckill-goods__tag ' + className">
@@ -55,7 +55,7 @@
                                     <view class="item-info">
                                         <block v-if="module.showName">
                                             <view class="item-name">
-                                                <navigator :url="'/pages/product/index?id=' + item.productId" class="item-name-a">
+                                                <navigator :url="'/pages/mall/product/index?id=' + item.productId" class="item-name-a">
                                                     {{ item.productName ?? "" }}
                                                 </navigator>
                                             </view>
@@ -145,7 +145,7 @@ const className = computed(() => {
 });
 
 const buy = (id: any) => {
-    uni.navigateTo({ url: "/pages/product/index?id=" + id });
+    uni.navigateTo({ url: "/pages/mall/product/index?id=" + id });
 };
 
 const seckillList = ref<SeckillList[]>();

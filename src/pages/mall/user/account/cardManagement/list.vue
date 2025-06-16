@@ -117,13 +117,13 @@ const __getAccountNoList = async () => {
 const __editAccountNo = (id: number) => {
     console.log(id);
     uni.navigateTo({
-        url: `/pages/user/account/cardManagement/edit?id=${id}`
+        url: `/pages/mall/user/account/cardManagement/edit?id=${id}`
     });
 };
 
 const __addAccountNo = () => {
     uni.navigateTo({
-        url: `/pages/user/account/cardManagement/edit`
+        url: `/pages/mall/user/account/cardManagement/edit`
     });
 };
 

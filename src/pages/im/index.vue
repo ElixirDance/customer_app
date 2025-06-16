@@ -6,7 +6,7 @@
                     <view class="shop-info" @click="returnFun">
                         <view class="iconfont icon-houtui"></view>
                     </view>
-                    <view class="right-opt" @click="handleToList(`/pages/im/list`)">
+                    <view class="right-opt" @click="handleToList(`/pages/mall/im/list`)">
                         <text class="ico-history wapim-conversation-banner-history"></text>
                     </view>
                 </view>
@@ -545,14 +545,14 @@ const pcDomain = computed(() => {
 
 const urlMap = reactive<{ [key: string]: { [key: string]: string } }>({
     pc: {
-        detail: `${pcDomain.value}/item/`,
-        order: `${pcDomain.value}/member/order/info?id=`,
-        shop: `${pcDomain.value}/shop/${filterParams.shopId}`
+        detail: `${pcDomain.value}/mall/item/`,
+        order: `${pcDomain.value}/mall/member/order/info?id=`,
+        shop: `${pcDomain.value}/mall/shop/${filterParams.shopId}`
     },
     mobile: {
-        detail: `/pages/product/index?id=`,
-        order: `/pages/user/order/info?id=`,
-        shop: `/pages/shop/index?shopId=${filterParams.shopId}`
+        detail: `/pages/mall/product/index?id=`,
+        order: `/pages/mall/user/order/info?id=`,
+        shop: `/pages/mall/shop/index?shopId=${filterParams.shopId}`
     }
 });
 

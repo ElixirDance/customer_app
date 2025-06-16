@@ -137,7 +137,7 @@
                                                                 :priceData="item.productPrice"
                                                             ></format-price>
                                                         </view>
-                                                        <view class="item-buy" @click="redirect({ url: `/pages/product/index?id=${item.productId}` })">
+                                                        <view class="item-buy" @click="redirect({ url: `/pages/mall/product/index?id=${item.productId}` })">
                                                             <view class="buy-btn">
                                                                 <template v-if="module.buyBtnStyle == 5 || module.buyBtnStyle == 6">
                                                                     <view>{{ $t("购买") }}</view>

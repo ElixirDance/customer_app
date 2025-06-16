@@ -59,7 +59,7 @@ const showShareCard = computed({
     }
 });
 const link = computed(() => {
-    return `${configStore.baseInfo.h5Domain}/pages/product/index?id=${props.currentData.productId}&salesmanId=${userInfo?.salesman?.salesmanId}`;
+    return `${configStore.baseInfo.h5Domain}/pages/mall/product/index?id=${props.currentData.productId}&salesmanId=${userInfo?.salesman?.salesmanId}`;
 });
 const showSaveImageTextCard = ref(false);
 

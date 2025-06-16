@@ -18,7 +18,7 @@
                         <view class="navigation-btn navigation-btn-left">
                             <navigator
                                 v-if="formArticleState.prev"
-                                :url="`/pages/article/issue/detail?id=${formArticleState.prev?.articleId}`"
+                                :url="`/pages/mall/article/issue/detail?id=${formArticleState.prev?.articleId}`"
                                 hover-class="navigator-hover"
                                 open-type="navigate"
                             >
@@ -28,7 +28,7 @@
                         <view class="navigation-btn navigation-btn-right">
                             <navigator
                                 v-if="formArticleState.next"
-                                :url="`/pages/article/issue/detail?id=${formArticleState.next?.articleId}`"
+                                :url="`/pages/mall/article/issue/detail?id=${formArticleState.next?.articleId}`"
                                 hover-class="navigator-hover"
                                 open-type="navigate"
                             >

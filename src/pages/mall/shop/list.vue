@@ -15,12 +15,12 @@
                                     </view>
                                 </view>
                             </view>
-                            <view class="info-btn" @click="redirect({ url: `/pages/shop/index?shopId=${item.shopId}` })">进店</view>
+                            <view class="info-btn" @click="redirect({ url: `/pages/mall/shop/index?shopId=${item.shopId}` })">进店</view>
                         </view>
                         <template v-if="item.listingProduct.length > 0">
                             <view class="item-product">
                                 <template v-for="subItem in item.listingProduct.slice(0, 3)" :key="subItem.productId">
-                                    <view class="product-item" @click="redirect({ url: `/pages/product/index?id=${subItem.productId}` })">
+                                    <view class="product-item" @click="redirect({ url: `/pages/mall/product/index?id=${subItem.productId}` })">
                                         <image class="product-img" mode="widthFix" :src="imageFormat(subItem.picUrl)"></image>
                                     </view>
                                 </template>

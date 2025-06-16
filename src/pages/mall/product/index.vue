@@ -158,7 +158,7 @@
                                         </view>
                                     </service>
                                 </view>
-                                <view class="label cart-position" @click.stop="toPage('/pages/cart/cartJump')">
+                                <view class="label cart-position" @click.stop="toPage('/pages/mall/cart/cartJump')">
                                     <view>
                                         <uni-badge class="uni-badge-left-margin badgecolor" :text="cartCount" absolute="rightTop" size="small">
                                             <image mode="widthFix" :src="staticResource('product/cart.png')" class="img"></image>
@@ -346,7 +346,7 @@ const refreshShopDetail = (id: number) => {
 const handleToShop = () => {
     if (shopInfo.value.shopId) {
         uni.navigateTo({
-            url: `/pages/shop/index?shopId=${shopInfo.value.shopId}`
+            url: `/pages/mall/shop/index?shopId=${shopInfo.value.shopId}`
         });
     }
 };

@@ -2,7 +2,7 @@
     <div class="recgoods-box">
         <div class="title">
             <div class="bg"></div>
-            <navigator url="/pages/search/index">
+            <navigator url="/pages/mall/search/index">
                 <div class="moregoods">{{ $t("查看更多") }} <span class="iconfont icon-xiangyou"></span></div>
             </navigator>
         </div>
@@ -54,7 +54,7 @@ const __getSignList = async () => {
 };
 
 const toProductPage = (params: any) => {
-    uni.navigateTo({ url: "/pages/product/index?id=" + params.productId });
+    uni.navigateTo({ url: "/pages/mall/product/index?id=" + params.productId });
 };
 
 onMounted(() => {

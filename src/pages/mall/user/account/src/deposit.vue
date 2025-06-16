@@ -124,7 +124,7 @@ const __updateRechargeOrder = async (data: object) => {
     try {
         const result = await updateRechargeOrder(data);
         uni.navigateTo({
-            url: `/pages/order/pay?orderId=${result.orderId}&type=recharge`
+            url: `/pages/mall/order/pay?orderId=${result.orderId}&type=recharge`
         });
     } catch (error: any) {
         uni.showToast({

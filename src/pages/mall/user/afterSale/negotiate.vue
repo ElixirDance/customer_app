@@ -64,7 +64,7 @@ const getViewRecordLog = async () => {
 
 const handleLeaveMessage = () => {
     uni.navigateTo({
-        url: `/pages/user/afterSale/leaveMessage?id=${id.value}`
+        url: `/pages/mall/user/afterSale/leaveMessage?id=${id.value}`
     });
 };
 </script>

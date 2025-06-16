@@ -38,7 +38,7 @@ const props = defineProps({
 const handleClick = () => {
     const token = uni.getStorageSync("token");
     if (!token) return handleLogin();
-    let url = `/pages/im/index?token=${token}`;
+    let url = `/pages/mall/im/index?token=${token}`;
     let type = userStore.serviceConfig.serviceType;
     let customUrl = userStore.serviceConfig.url;
 

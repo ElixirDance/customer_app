@@ -35,7 +35,7 @@
                             </view>
                             <view class="item-content-product">
                                 <template v-for="subItem in item.items" :key="subItem.itemId">
-                                    <navigator :url="'/pages/user/order/info?id=' + subItem.orderId" hover-class="navigator-hover">
+                                    <navigator :url="'/pages/mall/user/order/info?id=' + subItem.orderId" hover-class="navigator-hover">
                                         <view class="item-content-product-item">
                                             <view class="item-content-product-img">
                                                 <tig-image :src="subItem.picThumb"></tig-image>
@@ -337,18 +337,18 @@ const handleBuyAgain = async (id: number) => {
 
 const handlePay = (id: number) => {
     uni.navigateTo({
-        url: `/pages/order/pay?orderId=${id}`
+        url: `/pages/mall/order/pay?orderId=${id}`
     });
 };
 
 const handleOrederDetail = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/order/info?id=${id}`
+        url: `/pages/mall/user/order/info?id=${id}`
     });
 };
 const handleEvaluate = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/comment/info?id=${id}`
+        url: `/pages/mall/user/comment/info?id=${id}`
     });
 };
 const handleConfirmReceipt = (id: number) => {
@@ -376,7 +376,7 @@ const handleConfirmReceipt = (id: number) => {
 
 const handleToShop = (id: number) => {
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${id}`
+        url: `/pages/mall/shop/index?shopId=${id}`
     });
 };
 const formatOrderStatus = (status: string) => {

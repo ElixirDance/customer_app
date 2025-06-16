@@ -84,7 +84,7 @@ onLoad(() => {
 
 const handleLink = (id: number) => {
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${id}`
+        url: `/pages/mall/shop/index?shopId=${id}`
     });
 };
 

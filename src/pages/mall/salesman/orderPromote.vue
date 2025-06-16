@@ -77,7 +77,7 @@ const getSalesmanOrderList = async () => {
 
 const handleLink = (id: number) => {
     uni.navigateTo({
-        url: `/pages/salesman/settlementDetail?id=${id}`
+        url: `/pages/mall/salesman/settlementDetail?id=${id}`
     });
 };
 

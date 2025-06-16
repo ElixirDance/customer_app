@@ -105,7 +105,7 @@ const getSalesmanUserinfo = async () => {
     }
 };
 const handleLink = (id: number) => {
-    let url = salesmanId.value ? `/pages/product/index?id=${id}&salesmanId=${salesmanId.value}` : `/pages/product/index?id=${id}`;
+    let url = salesmanId.value ? `/pages/mall/product/index?id=${id}&salesmanId=${salesmanId.value}` : `/pages/mall/product/index?id=${id}`;
     uni.navigateTo({
         url
     });

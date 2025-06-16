@@ -26,7 +26,7 @@ let context = uni.createCanvasContext("myCanvas", instance);
 const qrcodeImg = ref("");
 const qrcodeRef = ref();
 const link = computed(() => {
-    return `${configStore.baseInfo.h5Domain}/pages/salesmanCard/index?&salesmanId=${userInfo.value?.salesman?.salesmanId}`;
+    return `${configStore.baseInfo.h5Domain}/pages/mall/salesmanCard/index?&salesmanId=${userInfo.value?.salesman?.salesmanId}`;
 });
 const height = 525;
 

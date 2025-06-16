@@ -74,7 +74,7 @@ const handleBuy = async () => {
         emit("callback");
         if (props.isQuick == true) {
             if (configStore.closeOrder === 1) return uni.$u.toast(t("商城已关闭下单"));
-            uni.navigateTo({ url: `/pages/order/check?flowType=${result.flowType}` });
+            uni.navigateTo({ url: `/pages/mall/order/check?flowType=${result.flowType}` });
         } else {
             uni.showToast({ title: t("加入购物车成功"), duration: 1500 });
         }

@@ -96,7 +96,7 @@ const {
 });
 
 const toDetail = (data: SeckillFilterState) => {
-    let url = `/pages/product/index?id=${data.productId}${data.skuId > 0 ? `&skuId=${data.skuId}` : ""}`;
+    let url = `/pages/mall/product/index?id=${data.productId}${data.skuId > 0 ? `&skuId=${data.skuId}` : ""}`;
     uni.navigateTo({
         url
     });

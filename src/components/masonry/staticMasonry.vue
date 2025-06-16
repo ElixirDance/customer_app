@@ -132,11 +132,11 @@ const toPage = (item: any) => {
 
     params = sku_id ? `${params}&sku_id=${sku_id}` : params;
 
-    uni.navigateTo({ url: "/pages/product/index?" + params });
+    uni.navigateTo({ url: "/pages/mall/product/index?" + params });
 };
 const handleToShop = (id: number) => {
     uni.navigateTo({
-        url: `/pages/shop/index?shop_id=${id}`
+        url: `/pages/mall/shop/index?shop_id=${id}`
     });
 };
 

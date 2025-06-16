@@ -26,7 +26,7 @@
                             <view class="order-list-item-content">
                                 <view class="item-content-product">
                                     <template v-for="subItem in item.items" :key="subItem.productId">
-                                        <navigator :url="'/pages/product/index?id=' + subItem.productId"
+                                        <navigator :url="'/pages/mall/product/index?id=' + subItem.productId"
                                             hover-class="navigator-hover">
                                             <view class="item-content-product-item">
                                                 <view class="item-content-product-img">
@@ -195,7 +195,7 @@ const filterParams = reactive<CommentFilterParams>({
 });
 const handleToDetail = (id: number) => {
     redirect({
-        url: `/pages/product/index?id=${id}`
+        url: `/pages/mall/product/index?id=${id}`
     });
 };
 const loaded = ref(false);
@@ -243,7 +243,7 @@ const loadFilter = async () => {
 
 const handleEvaluate = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/comment/info?id=${id}`
+        url: `/pages/mall/user/comment/info?id=${id}`
     });
 };
 

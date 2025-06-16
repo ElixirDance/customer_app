@@ -248,7 +248,7 @@ const getCouponList = async () => {
 
 const handleLink = (id: number) => {
     uni.navigateTo({
-        url: `/pages/product/index?id=${id}`
+        url: `/pages/mall/product/index?id=${id}`
     });
 };
 

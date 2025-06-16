@@ -81,7 +81,7 @@ const clearHistory = () => {
 };
 
 const handleSearch = (item: any) => {
-    let url = `/pages/search/result?keyWords=${item}`;
+    let url = `/pages/mall/search/result?keyWords=${item}`;
     shopId.value && (url += `&shopId=${shopId.value}`);
     redirect({
         url

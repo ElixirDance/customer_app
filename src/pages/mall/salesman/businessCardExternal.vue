@@ -45,7 +45,7 @@ const configStore = useConfigStore();
 const userInfo = ref(uni.getStorageSync("userInfo"));
 
 const link = computed(() => {
-    return `${configStore.baseInfo.h5Domain}/pages/salesman/salesmanCard?&salesmanId=${userInfo.value?.salesman?.salesmanId}`;
+    return `${configStore.baseInfo.h5Domain}/pages/mall/salesman/salesmanCard?&salesmanId=${userInfo.value?.salesman?.salesmanId}`;
 });
 
 const qrcodeRef = ref();

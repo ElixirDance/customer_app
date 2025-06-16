@@ -13,7 +13,7 @@
                         <view class="order-list-item-content">
                             <view class="item-content-product">
                                 <block v-for="subItem in item.aftersalesItems" :key="subItem.aftersalesItemId">
-                                    <navigator :url="'/pages/product/index?id=' + subItem.productId" hover-class="navigator-hover">
+                                    <navigator :url="'/pages/mall/product/index?id=' + subItem.productId" hover-class="navigator-hover">
                                         <view class="item-content-product-item">
                                             <view class="item-content-product-img">
                                                 <tig-image :src="subItem.picThumb"></tig-image>
@@ -93,7 +93,7 @@ const getList = async () => {
 
 const handleAfterSaleDetail = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/afterSale/info?id=${id}`
+        url: `/pages/mall/user/afterSale/info?id=${id}`
     });
 };
 

@@ -52,7 +52,7 @@ const getSalesmanContentList = async () => {
 
 const handleClick = (id: number) => {
     uni.navigateTo({
-        url: `/pages/salesman/notifyCenterDetail?id=${id}`
+        url: `/pages/mall/salesman/notifyCenterDetail?id=${id}`
     });
 };
 

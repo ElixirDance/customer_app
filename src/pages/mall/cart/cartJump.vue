@@ -35,7 +35,7 @@
                                                             :disabled="goods.isDisabled"
                                                         ></tig-checkbox>
                                                         <navigator
-                                                            :url="`/pages/product/index?id=${goods.productId}${
+                                                            :url="`/pages/mall/product/index?id=${goods.productId}${
                                                                 goods.skuId > 0 ? `&sku_id=${goods.skuId}` : ''
                                                             }`"
                                                             class="photo"
@@ -49,7 +49,7 @@
                                                         <view class="cart-row">
                                                             <navigator
                                                                 target="_blank"
-                                                                :url="`/pages/product/index?id=${goods.productId}${
+                                                                :url="`/pages/mall/product/index?id=${goods.productId}${
                                                                     goods.skuId > 0 ? `&sku_id=${goods.skuId}` : ''
                                                                 }`"
                                                             >
@@ -525,7 +525,7 @@ const handleDel = (cartId: number) => {
 const handleToShop = (id: number) => {
     if (id === 0) return;
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${id}`
+        url: `/pages/mall/shop/index?shopId=${id}`
     });
 };
 

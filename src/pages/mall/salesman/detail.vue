@@ -33,7 +33,7 @@
 
             <tig-fixed-placeholder backgroundColor="#fff">
                 <view class="bottom-btns">
-                    <view class="bottom-btn" @click="handleLink(`/pages/product/index?id=${detailData.productId}`)">
+                    <view class="bottom-btn" @click="handleLink(`/pages/mall/product/index?id=${detailData.productId}`)">
                         <view class="bottom-btn-text"> {{ $t("立即购买") }} </view>
                     </view>
                     <view class="bottom-btn special" @click="showShare = true">

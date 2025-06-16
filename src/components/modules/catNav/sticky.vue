@@ -132,7 +132,7 @@ const showCatNav = ref(0);
 
 const handleSkip = () => {
     uni.navigateTo({
-        url: "/pages/search/index"
+        url: "/pages/mall/search/index"
     });
 };
 

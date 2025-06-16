@@ -126,19 +126,19 @@ const cancelCollect = async () => {
 
 const toSearchTransferPage = () => {
     uni.navigateTo({
-        url: `/pages/search/index?shopId=${props.shopInfo.shopId}`
+        url: `/pages/mall/search/index?shopId=${props.shopInfo.shopId}`
     });
 };
 
 const toSearch = () => {
     uni.navigateTo({
-        url: `/pages/search/result?&shopId=${props.shopInfo.shopId}`
+        url: `/pages/mall/search/result?&shopId=${props.shopInfo.shopId}`
     });
 };
 
 const toCategory = () => {
     uni.navigateTo({
-        url: `/pages/shop/category?shopId=${props.shopInfo.shopId}`
+        url: `/pages/mall/shop/category?shopId=${props.shopInfo.shopId}`
     });
 };
 </script>

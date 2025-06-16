@@ -30,7 +30,7 @@
                                 :style="`width: ${module.bannerStyle?.searchIconSize}px;height:${module.bannerStyle?.searchIconSize}px`"
                             />
                         </view>
-                        <view class="search" @click="redirect({ url: '/pages/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
+                        <view class="search" @click="redirect({ url: '/pages/mall/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
                             <view class="search-icon" :style="`color:${module.bannerStyle?.searchFontColor}`"
                                 ><text class="iconfont-h5 icon-sousuo1"></text
                             ></view>
@@ -100,7 +100,7 @@
                                 :style="`width: ${module.bannerStyle?.searchIconSize}px;height:${module.bannerStyle?.searchIconSize}px`"
                             />
                         </view>
-                        <view class="search" @click="redirect({ url: '/pages/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
+                        <view class="search" @click="redirect({ url: '/pages/mall/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
                             <view class="search-icon" :style="`color:${module.bannerStyle?.searchFontColor}`"
                                 ><text class="iconfont-h5 icon-sousuo1"></text
                             ></view>

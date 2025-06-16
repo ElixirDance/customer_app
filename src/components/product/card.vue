@@ -48,11 +48,11 @@ const getCallback = () => {
 };
 const toPage = (item: any) => {
     let id = item.productId;
-    uni.navigateTo({ url: "/pages/product/index?id=" + id });
+    uni.navigateTo({ url: "/pages/mall/product/index?id=" + id });
 };
 const handleToShop = (id: number) => {
     uni.navigateTo({
-        url: `/pages/shop/index?shopId=${id}`
+        url: `/pages/mall/shop/index?shopId=${id}`
     });
 };
 </script>

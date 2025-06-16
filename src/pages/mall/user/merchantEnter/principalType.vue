@@ -44,12 +44,12 @@ const handleAffirm = () => {
 
     if (id.value > 0 && isReapply.value) {
         uni.navigateTo({
-            url: `/pages/user/merchantEnter/index?id=${id.value}&type=${type.value}&isReapply=${isReapply.value}`
+            url: `/pages/mall/user/merchantEnter/index?id=${id.value}&type=${type.value}&isReapply=${isReapply.value}`
         });
         return;
     }
     uni.navigateTo({
-        url: `/pages/user/merchantEnter/index?type=${type.value}`
+        url: `/pages/mall/user/merchantEnter/index?type=${type.value}`
     });
 };
 const loaded = ref(false);
@@ -59,7 +59,7 @@ const _getMyMerchant = async () => {
         if (result && Object.keys(result).length > 0) {
             if (!isReapply.value) {
                 uni.redirectTo({
-                    url: `/pages/user/merchantEnter/index?id=${result.merchantApplyId}&type=${result.type}`
+                    url: `/pages/mall/user/merchantEnter/index?id=${result.merchantApplyId}&type=${result.type}`
                 });
             } else {
                 id.value = result.merchantApplyId;

@@ -7,7 +7,7 @@
                         <template v-if="msgList.length > 0">
                             <view class="main-list" v-for="(item, index) in msgList" :key="index">
                                 <view
-                                    @click="handleLink(`/pages/im/index?shopId=${item.shopId}&conversationId=${item.conversationId}`)"
+                                    @click="handleLink(`/pages/mall/im/index?shopId=${item.shopId}&conversationId=${item.conversationId}`)"
                                     class="wapim-conversation-item"
                                 >
                                     <figure class="bg-pic circle-bg-pic thanos-figure thanos-hairline--surround conversation-figure">

@@ -133,7 +133,7 @@
                         <view :class="{ show }" class="categoryWrap">
                             <template v-for="(item, index) in childCatInfoData" :key="index">
                                 <template v-if="index < 10">
-                                    <view class="item" @click="redirect({ url: '/pages/search/result', param: { categoryId: item.categoryId } })">
+                                    <view class="item" @click="redirect({ url: '/pages/mall/search/result', param: { categoryId: item.categoryId } })">
                                         <view class="item-img">
                                             <tig-image :src="item.categoryPic"></tig-image>
                                         </view>
@@ -151,7 +151,7 @@
                             <template v-for="(brand, index) in brandInfoData" :key="index">
                                 <view class="item" v-if="index < 8">
                                     <view class="itemWrap">
-                                        <view @click="redirect({ url: '/pages/search/result', param: { brandId: brand.brandId } })">
+                                        <view @click="redirect({ url: '/pages/mall/search/result', param: { brandId: brand.brandId } })">
                                             <tig-image :src="brand.brandLogo"></tig-image>
                                             <view class="txt">{{ brand.brandName }}</view>
                                         </view>

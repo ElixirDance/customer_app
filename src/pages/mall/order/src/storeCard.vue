@@ -1,13 +1,13 @@
 <template>
     <view class="store-card" v-for="(item, index) in cartList" :key="index">
         <view class="store-card-item">
-            <view class="store-card-item-title" @click="handleLink(`/pages/shop/index?shopId=`, item.shopId)">
+            <view class="store-card-item-title" @click="handleLink(`/pages/mall/shop/index?shopId=`, item.shopId)">
                 <view class="store-card-item-label" v-if="item.shopId === 0">{{ $t("自营") }}</view>
                 <view class="store-card-item-name">{{ item.shopId === 0 ? $t("自营") : item.shopTitle }}</view>
             </view>
             <template v-for="(subItem, subIndex) in item.carts" :key="subIndex">
                 <view class="store-card-item-content">
-                    <view class="content-item" @click="handleLink(`/pages/product/index?id=`, subItem.productId)">
+                    <view class="content-item" @click="handleLink(`/pages/mall/product/index?id=`, subItem.productId)">
                         <view class="store-card-item-content-left">
                             <tig-image class="store-card-item-img" :src="subItem.picThumb"></tig-image>
                         </view>

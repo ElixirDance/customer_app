@@ -16,7 +16,7 @@
                             <view class="coupon-title-con">{{ $t(module.desc) }}</view>
                         </view>
                         <view>
-                            <navigator :url="shopId == -1 ? '/pages/coupon/index' : `/pages/coupon/index?shopId=${shopId}`">
+                            <navigator :url="shopId == -1 ? '/pages/mall/coupon/index' : `/pages/mall/coupon/index?shopId=${shopId}`">
                                 <text class="more">{{ $t("更多") }}</text>
                                 <text class="module_ico module-ico-youjiantou"></text>
                             </navigator>
@@ -108,7 +108,7 @@ onMounted(() => {
 });
 
 const handleCoupon = (id: number) => {
-    let url = props.shopId > -1 ? `/pages/coupon/detail?id=${id}&shopId=${props.shopId}` : `/pages/coupon/detail?id=${id}`;
+    let url = props.shopId > -1 ? `/pages/mall/coupon/detail?id=${id}&shopId=${props.shopId}` : `/pages/mall/coupon/detail?id=${id}`;
     uni.navigateTo({
         url
     });

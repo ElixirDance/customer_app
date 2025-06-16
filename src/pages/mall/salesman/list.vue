@@ -42,7 +42,7 @@
             <view class="salesman-list">
                 <block v-for="item in list" :key="item.productId">
                     <view class="salesman-list-item">
-                        <view class="salesman-item-content" @click="handleLink(`/pages/salesman/detail?id=${item.productId}`)">
+                        <view class="salesman-item-content" @click="handleLink(`/pages/mall/salesman/detail?id=${item.productId}`)">
                             <view class="salesman-item-img">
                                 <tig-image :src="item.picThumb"></tig-image>
                             </view>

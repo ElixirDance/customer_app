@@ -38,34 +38,34 @@ const show = computed({
 const menuList = [
     {
         icon: "common/home.svg",
-        text: "首页",
-        link: "/pages/index/index"
+        text: "商城首页",
+        link: "/pages/mall/index/index"
     },
     {
         icon: "common/search.svg",
         text: "搜索",
-        link: "/pages/search/index"
+        link: "/pages/mall/search/index"
     },
     {
         icon: "common/user.svg",
         text: "个人中心",
-        link: "/pages/user/index"
+        link: "/pages/mall/user/index"
     },
     {
         icon: "common/collection.svg",
         text: "商品收藏",
-        link: "/pages/user/collectProduct/index"
+        link: "/pages/mall/user/collectProduct/index"
     },
     {
         icon: "common/history.svg",
         text: "查看足迹",
-        link: "/pages/user/historyProduct/index"
+        link: "/pages/mall/user/historyProduct/index"
     },
 
     {
         icon: "common/message.svg",
         text: "消息中心",
-        link: "/pages/user/messageLog/index"
+        link: "/pages/mall/user/messageLog/index"
     }
 ];
 

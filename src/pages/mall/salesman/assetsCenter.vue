@@ -13,16 +13,16 @@
                 </view>
             </view>
             <view class="btn-block">
-                <tig-button class="apply" style="width: 100%; font-size: 30rpx" @click="goPages('/pages/salesman/withdraw')">提现</tig-button>
+                <tig-button class="apply" style="width: 100%; font-size: 30rpx" @click="goPages('/pages/mall/salesman/withdraw')">提现</tig-button>
             </view>
             <view class="van-cell-group van-hairline--top-bottom">
-                <view role="button" class="van-cell van-cell--clickable" @click="goPages('/pages/salesman/inOutRecordList')">
+                <view role="button" class="van-cell van-cell--clickable" @click="goPages('/pages/mall/salesman/inOutRecordList')">
                     <view class="van-cell__title">
                         <text>{{ $t("收支明细") }}</text>
                     </view>
                     <up-icon name="arrow-right" color="#c8c9cc" size="16"></up-icon>
                 </view>
-                <view role="button" class="van-cell van-cell--clickable" @click="goPages('/pages/salesman/withdrawRecordList')">
+                <view role="button" class="van-cell van-cell--clickable" @click="goPages('/pages/mall/salesman/withdrawRecordList')">
                     <view class="van-cell__title">
                         <text>{{ $t("提现记录") }}</text>
                     </view>

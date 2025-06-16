@@ -241,11 +241,11 @@ const handleEdit = async () => {
     try {
         if (infoData.value.aftersalesItems.length === 1) {
             uni.redirectTo({
-                url: `/pages/user/afterSale/edit?aftersaleId=${infoData.value.aftersaleId}&itemId=${infoData.value.aftersalesItems[0].orderItemId}`
+                url: `/pages/mall/user/afterSale/edit?aftersaleId=${infoData.value.aftersaleId}&itemId=${infoData.value.aftersalesItems[0].orderItemId}`
             });
         } else {
             uni.redirectTo({
-                url: `/pages/user/afterSale/edit?aftersaleId=${infoData.value.aftersaleId}`
+                url: `/pages/mall/user/afterSale/edit?aftersaleId=${infoData.value.aftersaleId}`
             });
         }
     } catch (error) {
@@ -260,7 +260,7 @@ const showReturngoodstip = computed(() => {
 
 const handleProduct = (id: number) => {
     uni.navigateTo({
-        url: `/pages/product/index?id=${id}`
+        url: `/pages/mall/product/index?id=${id}`
     });
 };
 
@@ -271,7 +271,7 @@ const handleNegotiate = () => {
 };
 const handleShipments = () => {
     uni.navigateTo({
-        url: `/pages/user/afterSale/shipments?id=${infoData.value.aftersaleId}&returnAddress=${infoData.value.returnAddress}`
+        url: `/pages/mall/user/afterSale/shipments?id=${infoData.value.aftersaleId}&returnAddress=${infoData.value.returnAddress}`
     });
 };
 </script>

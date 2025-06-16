@@ -33,7 +33,7 @@ onLoad((options) => {
 
 const getRefresh = (id: number) => {
     uni.redirectTo({
-        url: `/pages/user/merchantEnter/index?id=${id}&type=${type.value}`
+        url: `/pages/mall/user/merchantEnter/index?id=${id}&type=${type.value}`
     });
 };
 </script>

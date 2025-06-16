@@ -13,7 +13,7 @@
                     <view class="invoice-list-item-content">
                         <view class="item-content-product">
                             <template v-for="subItem in item.items" :key="subItem.itemId">
-                                <navigator :url="'/pages/product/index?id=' + subItem.productId" hover-class="navigator-hover">
+                                <navigator :url="'/pages/mall/product/index?id=' + subItem.productId" hover-class="navigator-hover">
                                     <view class="item-content-product-item">
                                         <view class="item-content-product-img">
                                             <tig-image :src="subItem.picThumb"></tig-image>
@@ -129,7 +129,7 @@ const formatText = (status: number) => {
 
 const handleApply = (id: number) => {
     uni.navigateTo({
-        url: `/pages/user/invoiceManagement/applyInvoice?orderId=${id}`
+        url: `/pages/mall/user/invoiceManagement/applyInvoice?orderId=${id}`
     });
 };
 

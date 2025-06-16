@@ -1,5 +1,7 @@
 <template>
   <view class="chat-container">
+    <up-navbar title="语音聊天" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+    </up-navbar>
     <!-- 聊天记录区 -->
     <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation>
       <view v-for="(msg, idx) in chatList" :key="idx" :class="['chat-item', msg.role]">
@@ -23,9 +25,9 @@
       <view class="record-content" :class="{cancel: recordCancel, short: recordTooShort}">
         <view v-if="recordTooShort">说话时间太短</view>
         <view v-else-if="recordCancel">松开手指，取消发送</view>
-        <view v-else>
-          <image :src="recordingGif" style="width:60rpx;height:60rpx;" />
-          正在录音...
+        <view class="recording-status" style="display: flex;align-items: center;" v-else>
+          <image :src="recordingGif" class="recording-icon" style="width:50rpx;height:50rpx;margin-right: 10rpx;" />
+          <view class="recording-text">正在录音...</view>
         </view>
       </view>
     </view>
@@ -45,13 +47,13 @@
 
 <script lang='ts' setup>
 import { ref, onMounted, onUnmounted, nextTick } from 'vue';
+import parentAvatar from '@/static/images/father.png';
+import childAvatar from '@/static/images/child.png';
+import normalVoiceIcon from '@/static/images/voice.png';
+import playingVoiceIcon from '@/static/images/voice_playing.gif';
+import recordingGif from '@/static/images/recording.gif';
 
 // 图片资源引用
-const parentAvatar = ref('/static/parent.png');
-const childAvatar = ref('/static/child.png');
-const normalVoiceIcon = ref('/static/voice.png');
-const playingVoiceIcon = ref('/static/voice_playing.gif');
-const recordingGif = ref('/static/recording.gif');
 
 // 状态管理
 const chatList = ref([
@@ -68,6 +70,10 @@ const recordTooShort = ref(false);
 const recordAnim = ref(false);
 const recordBtnText = ref('按住说话');
 const recordBtnActive = ref(false);
+
+function onBack() {
+	uni.navigateBack()
+}
 
 // 检查录音权限
 const checkRecordAuth = async () => {
@@ -398,6 +404,20 @@ onUnmounted(() => {
   flex-direction: column;
   align-items: center;
   box-shadow: 0 4rpx 24rpx rgba(64,158,255,0.12);
+  
+  .recording-status {
+    display: flex;
+    align-items: center;
+  }
+  .recording-icon {
+    width: 50rpx;
+    height: 50rpx;
+    margin-right: 10rpx;
+  }
+  .recording-text {
+    font-size: 30rpx;
+    color: #333;
+  }
 }
 .record-content.cancel {
   color: #fff;

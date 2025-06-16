@@ -52,27 +52,27 @@
 		},
 		{
 			id: 2,
-			title: '成长记录',
-			description: '记录孩子的成长里程碑和重要事件',
-			path: '/pages/growth-record'
+			title: '家庭管理',
+			description: '管理家庭成员',
+			path: '/pages/familyManage/index'
 		},
 		{
 			id: 3,
-			title: '疫苗接种',
-			description: '管理儿童疫苗接种计划和记录',
-			path: '/pages/vaccination'
+			title: '儿童数据分析',
+			description: '分析儿童的技能',
+			path: '/pages/analytics/index'
 		},
 		{
 			id: 4,
-			title: '健康数据',
-			description: '记录和查看儿童身高、体重等健康数据',
-			path: '/pages/health-data'
+			title: 'AI聊天',
+			description: '和AI人工智能机器人聊天吧',
+			path: '/pages/chatAI/index'
 		},
 		{
 			id: 5,
-			title: '教育资源',
-			description: '获取适合儿童的教育内容和活动',
-			path: '/pages/education-resources'
+			title: '语音聊天',
+			description: '和儿童在线语音聊天',
+			path: '/pages/chat/index'
 		},
 		{
 			id: 6,

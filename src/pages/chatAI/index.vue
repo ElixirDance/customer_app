@@ -1,5 +1,7 @@
 <template>
   <view class="chat-ai-container">
+    <up-navbar title="AI聊天" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+    </up-navbar>
     <!-- 顶部提示 -->
     <view class="ai-tip">
       请输入您的育儿问题，机器人将结合儿童行为数据为您提供科学个性化建议（不支持医学类问题咨询）。
@@ -44,6 +46,10 @@ const chatList = ref([
 ]);
 const loading = ref(false);
 const scrollTop = ref(0);
+
+function onBack() {
+	uni.navigateBack()
+}
 
 // 发送消息
 const sendMsg = async () => {

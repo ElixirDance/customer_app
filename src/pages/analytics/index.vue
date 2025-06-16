@@ -1,4 +1,6 @@
 <template>
+	<up-navbar title="儿童数据分析" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+	</up-navbar>
   <view class="analytics-container">
     <!-- 发展评估雷达图部分 -->
     <view class="section development-assessment">
@@ -56,6 +58,10 @@
 
 <script lang="ts" setup>
 import { ref, onMounted } from 'vue';
+
+function onBack() {
+	uni.navigateBack();
+}
 
 // 响应式数据
 const assessmentData = ref([

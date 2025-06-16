@@ -30,10 +30,12 @@
 
 <script lang="ts" setup>
 import { ref, onMounted, nextTick } from 'vue';
-
 // 图片资源引用
-const userAvatar = ref('/static/user.png');
-const aiAvatar = ref('/static/ai.png');
+import userAvatar from '@/static/images/user.png';
+import aiAvatar from '@/static/images/robot.png';
+
+// const userAvatar = ref('/static/user.png');
+// const aiAvatar = ref('/static/ai.png');
 
 // 状态管理
 const inputValue = ref('');
@@ -74,7 +76,7 @@ const sendMsg = async () => {
 };
 
 // 模拟AI回复
-const mockAIReply = (q) => {
+const mockAIReply = (q: string): Promise<string> => {
   return new Promise(resolve => {
     setTimeout(() => {
       resolve('这是AI根据您的问题和儿童行为数据生成的个性化建议示例。');

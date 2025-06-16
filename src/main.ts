@@ -8,12 +8,14 @@ import i18n from "@/i18n";
 
 // main.js 或 App.vue
 // 开发环境下引入 Mock
-if (process.env.NODE_ENV === 'development') {
-  // 引入 Mock 入口文件
-  import('../mock').then(({ initMock }) => {
-    initMock(); // 初始化 Mock（如果有初始化函数）
-  });
-}
+// 打包到android基座的时候,必须注释掉否则报错
+// Invalid value "iife" for option "output.format" - UMD and IIFE output formats are not supported for code-splitting builds
+// if (process.env.NODE_ENV === 'development') {
+//   // 引入 Mock 入口文件
+//   import('../mock').then(({ initMock }) => {
+//     initMock(); // 初始化 Mock（如果有初始化函数）
+//   });
+// }
 
 export function createApp() {
     const app = createSSRApp(App);

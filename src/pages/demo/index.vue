@@ -1,4 +1,6 @@
 <template>
+	<up-navbar title="demo" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+	</up-navbar>
     <up-cell-group>
         <up-cell title="儿童专属档案" isLink url="/pages/childManage/index"></up-cell>
         <up-cell title="站内搜索" isLink url="/pages/siteSearch/index"></up-cell>
@@ -9,6 +11,10 @@
     </up-cell-group>
 </template>
 
-<script></script>
+<script lang="ts" setup>
+	function onBack() {
+		uni.navigateBack()
+	}
+</script>
 
 <style></style>

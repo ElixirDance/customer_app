@@ -1,4 +1,6 @@
 <template>
+	<up-navbar title="站内搜索" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+	</up-navbar>
 	<view class="search-page">
 		<!-- 搜索框 -->
 		<view class="search-box">
@@ -30,6 +32,10 @@
 <script lang="ts" setup>
 	import { ref, reactive, onMounted } from 'vue';
 	import { debounce } from 'lodash-es';
+	
+	function onBack() {
+		uni.navigateBack()
+	}
 
 	// 搜索关键词
 	const searchKeyword = ref('');

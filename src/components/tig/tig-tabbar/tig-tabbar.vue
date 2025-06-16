@@ -9,7 +9,7 @@
                             :src="tabbarStore.currentActiveValue === index ? imageFormat(item.activeImage) : imageFormat(item.image)"
                         />
                     </view>
-                    <view class="tabbar-text" :class="{ active: tabbarStore.currentActiveValue === index }">{{ $t(item.text)  }} {{tabbarStore.currentActiveValue  }} -{{index}}</view>
+                    <view class="tabbar-text" :class="{ active: tabbarStore.currentActiveValue === index }">{{ $t(item.text) }}</view>
                 </view>
             </view>
         </view>

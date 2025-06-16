@@ -56,7 +56,7 @@ import { onShow, onLoad, onReachBottom } from "@dcloudio/uni-app";
 import { salesmanProductList, salesmanUserinfo } from "@/api/salesman/salesman";
 import type { SalesmanProductListFilterResult } from "@/types/salesman/salesman";
 import { redirect } from "@/utils";
-import empty from "@/pages/salesman/src/empty.vue";
+import empty from "@/pages/mall/salesman/src/empty.vue";
 const userInfo = ref<any>({});
 const list = ref<SalesmanProductListFilterResult[]>([]);
 const filterParams = reactive({

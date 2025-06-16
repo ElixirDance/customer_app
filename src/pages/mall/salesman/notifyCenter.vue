@@ -29,7 +29,7 @@ import { reactive, ref } from "vue";
 import { salesmanContentList } from "@/api/salesman/salesman";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";
 import type { SalesmanContentListFilterResult } from "@/types/salesman/salesman";
-import empty from "@/pages/salesman/src/empty.vue";
+import empty from "@/pages/mall/salesman/src/empty.vue";
 
 const filterParams = reactive({
     page: 1,

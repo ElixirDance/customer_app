@@ -404,7 +404,7 @@
 import { reactive, ref, onMounted } from "vue";
 import selectRegion from "@/components/region/selectRegion.vue";
 import upload from "@/components/upload/index.vue";
-import steps from "@/pages/user/merchantEnter/src/steps.vue";
+import steps from "@/pages/mall/user/merchantEnter/src/steps.vue";
 import { staticResource } from "@/utils";
 import { getMyApply, getApplyInfo, applyApply } from "@/api/user/userCertification";
 import type { ApplyDetailItem } from "@/types/user/userCertification";

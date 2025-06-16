@@ -47,8 +47,8 @@
 
 <script lang="ts" setup>
 import { reactive, ref } from "vue";
-import empty from "@/pages/salesman/src/empty.vue";
-import timeFilter from "@/pages/salesman/src/timeFilter.vue";
+import empty from "@/pages/mall/salesman/src/empty.vue";
+import timeFilter from "@/pages/mall/salesman/src/timeFilter.vue";
 import { salesmanOrderList } from "@/api/salesman/salesman";
 import type { OrderListFilterResult } from "@/types/salesman/salesman";
 import { onLoad, onReachBottom } from "@dcloudio/uni-app";

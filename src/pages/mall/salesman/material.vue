@@ -101,7 +101,7 @@ import searchInput from "./src/searchInput.vue";
 import materialPopover from "./src/materialPopover.vue";
 import materialSaveCard from "./src/materialSaveCard.vue";
 import materialChoosePoster from "./src/materialChoosePoster.vue";
-import empty from "@/pages/salesman/src/empty.vue";
+import empty from "@/pages/mall/salesman/src/empty.vue";
 import { useConfigStore } from "@/store/config";
 import { imageFormat } from "@/utils/format";
 import { getDownloadFileInfo, copy, staticResource, saveImageToAlbum } from "@/utils";

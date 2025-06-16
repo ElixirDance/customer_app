@@ -47,10 +47,10 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import detail from "@/pages/user/account/src/detail.vue";
-import log from "@/pages/user/account/src/log.vue";
-import deposit from "@/pages/user/account/src/deposit.vue";
-import raplyToCard from "@/pages/user/account/src/raplyToCard.vue";
+import detail from "@/pages/mall/user/account/src/detail.vue";
+import log from "@/pages/mall/user/account/src/log.vue";
+import deposit from "@/pages/mall/user/account/src/deposit.vue";
+import raplyToCard from "@/pages/mall/user/account/src/raplyToCard.vue";
 import { onLoad } from "@dcloudio/uni-app";
 import { getUser } from "@/api/user/user";
 import type { UserItem } from "@/types/user/user";

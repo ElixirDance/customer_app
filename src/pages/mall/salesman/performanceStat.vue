@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import timeFilter from "@/pages/salesman/src/timeFilter.vue";
+import timeFilter from "@/pages/mall/salesman/src/timeFilter.vue";
 
 const uToastRef = ref<any>(null);
 const showTipClick = () => {

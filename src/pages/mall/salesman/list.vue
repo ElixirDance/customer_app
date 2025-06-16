@@ -74,7 +74,7 @@
 <script setup lang="ts">
 import { ref, reactive } from "vue";
 import searchInput from "./src/searchInput.vue";
-import empty from "@/pages/salesman/src/empty.vue";
+import empty from "@/pages/mall/salesman/src/empty.vue";
 import share from "./src/share.vue";
 import { salesmanProductList } from "@/api/salesman/salesman";
 import type { SalesmanProductListFilterResult } from "@/types/salesman/salesman";

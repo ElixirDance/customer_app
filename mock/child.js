@@ -3,7 +3,7 @@ import Mock from 'mockjs';
 const baseUrl = `https://shop.terracecapital.xyz`;
 
 // 模拟获取用户信息接口，请求地址、请求方式按需改
-Mock.mock(baseUrl+'/api/child/child', 'get', {
+Mock.mock(baseUrl+'/api/child/get', 'get', {
   'code': 0,
   'message': 'success',
   'data': {
@@ -17,7 +17,7 @@ Mock.mock(baseUrl+'/api/child/child', 'get', {
   }
 });
 
-Mock.mock(baseUrl+'/api/child/childs', 'get', {
+Mock.mock(baseUrl+'/api/child/list', 'get', {
   'code': 0,
   'message': 'success',
   'data|1-3': [ // 随机生成2-5个孩子数据

@@ -3,7 +3,7 @@ import type { AddOrUpdateChildParams, ChildFilterParams, ChildFormResult, Childs
 
 export const getChilds = (params = {}) => {
 	return request<ChildsFormResult>({
-	    url: "child/childs",
+	    url: "child/list",
 	    method: "get",
 	    params
 	});
@@ -12,7 +12,7 @@ export const getChilds = (params = {}) => {
 //获取宝贝信息
 export const getChild = (params: ChildFilterParams) => {	
     return request<ChildFormResult>({
-        url: "child/child",
+        url: "child/get",
         method: "get",
         params
     });

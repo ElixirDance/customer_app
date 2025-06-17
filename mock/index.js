@@ -1,6 +1,7 @@
 // 导入所有模块
 import './child.js';
 import './parent.js';
+import './chat.js';
 
 
 // 导出一个初始化函数（可选）

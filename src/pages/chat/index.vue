@@ -52,17 +52,16 @@ import childAvatar from '@/static/images/child.png';
 import normalVoiceIcon from '@/static/images/voice.png';
 import playingVoiceIcon from '@/static/images/voice_playing.gif';
 import recordingGif from '@/static/images/recording.gif';
+import { getChatMessage } from '@/api/chat/chat';
 
 // 图片资源引用
 
 // 状态管理
-const chatList = ref([
-  { role: 'parent', duration: 6, url: '', playing: false, time: '2024-06-01 14:23' },
-  { role: 'child', duration: 4, url: '', playing: false, time: '2024-06-01 14:24' }
-]);
+const chatList = ref([]);
 const scrollTop = ref(0);
 const showAuthModal = ref(false);
-const recorder = ref(null);
+const recorderManager = ref(null);
+const innerAudioContext = ref(null);
 const recording = ref(false);
 const recordStartTime = ref(0);
 const recordCancel = ref(false);
@@ -70,6 +69,7 @@ const recordTooShort = ref(false);
 const recordAnim = ref(false);
 const recordBtnText = ref('按住说话');
 const recordBtnActive = ref(false);
+const uploading = ref(false);
 
 function onBack() {
 	uni.navigateBack()
@@ -77,44 +77,137 @@ function onBack() {
 
 // 检查录音权限
 const checkRecordAuth = async () => {
-  const sys = uni.getSystemInfoSync();
-  if (sys.platform === 'devtools' || sys.platform === 'android' || sys.platform === 'ios') {
-    // 微信小程序/APP
-    if (typeof wx !== 'undefined' && wx.getSetting) {
-      return new Promise(resolve => {
-        wx.getSetting({
-          success: (res) => {
-            if (!res.authSetting['scope.record']) {
+  // #ifdef APP-PLUS
+  return new Promise((resolve) => {
+    const permission = 'RECORD';
+    plus.android.requestPermissions(
+      [permission],
+      function(resultObj) {
+        if (resultObj.granted.length === 1) {
+          resolve(true);
+        } else {
+          showAuthModal.value = true;
+          resolve(false);
+        }
+      },
+      function(error) {
+        showAuthModal.value = true;
+        resolve(false);
+      }
+    );
+  });
+  // #endif
+
+  // #ifdef MP-WEIXIN
+  return new Promise(resolve => {
+    wx.getSetting({
+      success: (res) => {
+        if (!res.authSetting['scope.record']) {
+          wx.authorize({
+            scope: 'scope.record',
+            success: () => resolve(true),
+            fail: () => {
               showAuthModal.value = true;
               resolve(false);
-            } else {
-              resolve(true);
             }
-          },
-          fail: () => {
-            showAuthModal.value = true;
-            resolve(false);
-          }
-        });
-      });
-    }
-  } else if (sys.platform === 'h5' || typeof window !== 'undefined') {
-    // H5
-    try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-    } catch (e) {
-      showAuthModal.value = true;
-      return false;
-    }
+          });
+        } else {
+          resolve(true);
+        }
+      },
+      fail: () => {
+        showAuthModal.value = true;
+        resolve(false);
+      }
+    });
+  });
+  // #endif
+
+  // #ifdef H5
+  try {
+    await navigator.mediaDevices.getUserMedia({ audio: true });
+    return true;
+  } catch (e) {
+    showAuthModal.value = true;
+    return false;
   }
+  // #endif
+
   return true;
 };
 
+// 上传语音文件到服务端
+const uploadVoiceFile = async (tempFilePath: string, duration: number) => {
+  try {
+    uploading.value = true;
+    uni.showLoading({
+      title: '发送中...',
+      mask: true
+    });
+
+    // 上传文件
+    const uploadRes = await uni.uploadFile({
+      url: ' http://192.168.3.11:3000/upload', // 替换为您的实际上传接口
+      filePath: tempFilePath,
+      name: 'file',
+      formData: {
+        duration: duration,
+        type: 'voice'
+      }
+    });
+
+    if (uploadRes.statusCode === 200) {
+      const result = JSON.parse(uploadRes.data);
+      if (result.code === 0) {
+        // 上传成功，添加消息
+        addVoiceMsg('parent', duration, result.data);
+      } else {
+        throw new Error(result.message || '上传失败');
+      }
+    } else {
+      throw new Error('上传失败');
+    }
+  } catch (error) {
+    console.error('上传语音失败：', error);
+    uni.showToast({
+      title: '发送失败，请重试',
+      icon: 'none'
+    });
+  } finally {
+    uploading.value = false;
+    uni.hideLoading();
+  }
+};
+
+// 初始化录音管理器
+const initRecorder = () => {
+  recorderManager.value = uni.getRecorderManager();
+  innerAudioContext.value = uni.createInnerAudioContext();
+  innerAudioContext.value.autoplay = false;
+
+  // 监听录音结束事件
+  recorderManager.value.onStop((res) => {
+    const duration = Math.round((Date.now() - recordStartTime.value) / 1000);
+    if (!recordCancel.value && duration >= 1) {
+      // 上传语音文件
+      uploadVoiceFile(res.tempFilePath, duration);
+    }
+  });
+
+  // 监听录音错误事件
+  recorderManager.value.onError((res) => {
+    uni.showToast({
+      title: '录音失败',
+      icon: 'none'
+    });
+    console.error('录音错误：', res);
+  });
+};
+
 // 开始录音
-const startRecord = async (e) => {
-  if (recording.value) return;
-  const hasAuth = await checkRecordAuth();
-  if (!hasAuth) return;
+const startRecord = async () => {
+  if (recording.value || uploading.value) return;
+  
   recording.value = true;
   recordCancel.value = false;
   recordTooShort.value = false;
@@ -122,13 +215,15 @@ const startRecord = async (e) => {
   recordBtnText.value = '松开结束';
   recordBtnActive.value = true;
   recordStartTime.value = Date.now();
-  // #ifdef MP-WEIXIN
-  recorder.value = wx.getRecorderManager();
-  recorder.value.start({ format: 'mp3' });
-  // #endif
-  // #ifdef H5
-  // 这里只做UI演示，实际需集成Recorder.js等库
-  // #endif
+
+  // 开始录音
+  recorderManager.value.start({
+    duration: 60000,
+    sampleRate: 44100,
+    numberOfChannels: 1,
+    encodeBitRate: 192000,
+    format: 'mp3'
+  });
 };
 
 // 录音时手指上滑取消
@@ -145,48 +240,40 @@ const moveRecord = (e) => {
 
 // 停止录音并发送
 const stopRecord = () => {
-  if (!recording.value) return;
+  if (!recording.value || uploading.value) return;
   recording.value = false;
   recordAnim.value = false;
   recordBtnActive.value = false;
   recordBtnText.value = '按住说话';
   const duration = Math.round((Date.now() - recordStartTime.value) / 1000);
+
   if (recordCancel.value) {
-    // 取消发送
     uni.showToast({ title: '已取消', icon: 'none' });
     return;
   }
+
   if (duration < 1) {
     recordTooShort.value = true;
     setTimeout(() => { recordTooShort.value = false; }, 1200);
     uni.showToast({ title: '说话时间太短', icon: 'none' });
     return;
   }
-  // #ifdef MP-WEIXIN
-  recorder.value.stop();
-  recorder.value.onStop = (res) => {
-    addVoiceMsg('parent', duration, res.tempFilePath);
-  };
-  // #endif
-  // #ifdef H5
-  // 这里只做UI演示，实际需集成录音库
-  addVoiceMsg('parent', duration, '');
-  // #endif
+
+  recorderManager.value.stop();
 };
 
 // 取消录音
 const cancelRecord = () => {
+  if (uploading.value) return;
   recording.value = false;
   recordAnim.value = false;
   recordBtnActive.value = false;
   recordBtnText.value = '按住说话';
-  // #ifdef MP-WEIXIN
-  if (recorder.value) recorder.value.stop();
-  // #endif
+  recorderManager.value.stop();
 };
 
 // 添加语音消息
-const addVoiceMsg = (role, duration, url) => {
+const addVoiceMsg = (role: string, duration: number, url: string) => {
   const now = new Date();
   const time = now.getFullYear() + '-' +
     String(now.getMonth() + 1).padStart(2, '0') + '-' +
@@ -199,18 +286,36 @@ const addVoiceMsg = (role, duration, url) => {
 
 // 播放语音
 const playVoice = (msg) => {
-  chatList.value.forEach(m => m.playing = false)
-  msg.playing = true
-  // #ifdef MP-WEIXIN
-  const innerAudioContext = wx.createInnerAudioContext()
-  innerAudioContext.src = msg.url
-  innerAudioContext.play()
-  innerAudioContext.onEnded = () => { msg.playing = false }
-  // #endif
-  // #ifdef H5
-  // 这里只做UI演示
-  setTimeout(() => { msg.playing = false }, msg.duration * 1000)
-  // #endif
+  if (!msg.url) {
+    uni.showToast({
+      title: '语音文件不存在',
+      icon: 'none'
+    });
+    return;
+  }
+
+  chatList.value.forEach(m => m.playing = false);
+  msg.playing = true;
+
+  if (innerAudioContext.value) {
+    innerAudioContext.value.stop();
+  }
+  
+  innerAudioContext.value.src = msg.url;
+  innerAudioContext.value.play();
+  
+  innerAudioContext.value.onEnded(() => {
+    msg.playing = false;
+  });
+  
+  innerAudioContext.value.onError((res) => {
+    console.error('播放错误：', res);
+    msg.playing = false;
+    uni.showToast({
+      title: '播放失败',
+      icon: 'none'
+    });
+  });
 };
 
 // 滚动到底部
@@ -231,16 +336,51 @@ const formatTime = (time) => {
   return time;
 };
 
+// 获取聊天记录
+const getChatHistory = async () => {
+  try {
+    const result = await getChatMessage({
+      firstId: -1,
+      sortOrder: 'desc',
+      userFrom: '',
+      shopId: 0
+    });
+    
+    if (result.data && result.data.length > 0) {
+      // 将消息转换为聊天列表格式
+      chatList.value = result.data.map(msg => ({
+        role: msg.senderType === 1 ? 'parent' : 'child',
+        duration: msg.content?.duration || 0,
+        url: msg.content?.url || '',
+        playing: false,
+        time: msg.createTime
+      }));
+      
+      // 滚动到底部
+      nextTick(scrollToBottom);
+    }
+  } catch (error) {
+    console.error('获取聊天记录失败：', error);
+    uni.showToast({
+      title: '获取聊天记录失败',
+      icon: 'none'
+    });
+  }
+};
+
 // 生命周期钩子
 onMounted(() => {
-  // 组件挂载时的操作
+  initRecorder();
+  getChatHistory(); // 获取聊天记录
 });
 
 onUnmounted(() => {
-  // 组件卸载时的清理操作
-  // #ifdef MP-WEIXIN
-  if (recorder.value) recorder.value.stop();
-  // #endif
+  if (recorderManager.value) {
+    recorderManager.value.stop();
+  }
+  if (innerAudioContext.value) {
+    innerAudioContext.value.destroy();
+  }
 });
 </script>
 

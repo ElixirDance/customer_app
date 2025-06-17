@@ -3,8 +3,9 @@
     <up-navbar title="语音聊天" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
     </up-navbar>
     <!-- 聊天记录区 -->
-    <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation>
-      <view v-for="(msg, idx) in chatList" :key="idx" :class="['chat-item', msg.role]">
+    <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation @scroll="onScrollChange">
+      <view v-if="isLoading" class="loading-more">加载中...</view>
+      <view v-for="(msg, idx) in chatList" :key="msg.id || idx" :class="['chat-item', msg.role]">
         <view class="bubble-wrap">
           <view class="msg-time">{{formatTime(msg.time)}}</view>
           <view class="voice-row">
@@ -57,7 +58,7 @@ import { getChatMessage } from '@/api/chat/chat';
 // 图片资源引用
 
 // 状态管理
-const chatList = ref([]);
+const chatList = ref<any[]>([]);
 const scrollTop = ref(0);
 const showAuthModal = ref(false);
 const recorderManager = ref(null);
@@ -70,6 +71,14 @@ const recordAnim = ref(false);
 const recordBtnText = ref('按住说话');
 const recordBtnActive = ref(false);
 const uploading = ref(false);
+
+// 分页相关
+const pageSize = 20;
+const firstId = ref(-1);
+const isLoading = ref(false);
+const hasMore = ref(true);
+const lastScrollTop = ref(0);
+const isFirstLoad = ref(true);
 
 function onBack() {
 	uni.navigateBack()
@@ -147,12 +156,15 @@ const uploadVoiceFile = async (tempFilePath: string, duration: number) => {
 
     // 上传文件
     const uploadRes = await uni.uploadFile({
-      url: ' http://192.168.3.11:3000/upload', // 替换为您的实际上传接口
+      url: ' http://192.168.3.11:3000/api/chat/add', // 替换为您的实际上传接口
       filePath: tempFilePath,
       name: 'file',
       formData: {
         duration: duration,
-        type: 'voice'
+        type: 'voice',
+        to: 2,
+        role: "parent",
+        time: Date.now(),
       }
     });
 
@@ -338,26 +350,49 @@ const formatTime = (time) => {
 
 // 获取聊天记录
 const getChatHistory = async () => {
+  if (isLoading.value || !hasMore.value) return;
+  
   try {
+    isLoading.value = true;
     const result = await getChatMessage({
-      firstId: -1,
+      firstId: firstId.value,
       sortOrder: 'desc',
-      userFrom: '',
-      shopId: 0
+      pageSize
     });
     
     if (result.data && result.data.length > 0) {
       // 将消息转换为聊天列表格式
-      chatList.value = result.data.map(msg => ({
+      const newMessages = result.data.map(msg => ({
         role: msg.senderType === 1 ? 'parent' : 'child',
         duration: msg.content?.duration || 0,
         url: msg.content?.url || '',
         playing: false,
-        time: msg.createTime
+        time: msg.createTime,
+        id: msg.id
       }));
       
-      // 滚动到底部
-      nextTick(scrollToBottom);
+      // 更新firstId为最早消息的id
+      firstId.value = newMessages[newMessages.length - 1].id;
+      
+      // 如果是首次加载，直接赋值；否则将新消息添加到列表前面
+      if (isFirstLoad.value) {
+        chatList.value = newMessages;
+        isFirstLoad.value = false;
+        nextTick(scrollToBottom);
+      } else {
+        chatList.value = [...newMessages, ...chatList.value];
+        // 恢复滚动位置
+        nextTick(() => {
+          if (lastScrollTop.value) {
+            scrollTop.value = lastScrollTop.value;
+          }
+        });
+      }
+      
+      // 判断是否还有更多数据
+      hasMore.value = result.data.length === pageSize;
+    } else {
+      hasMore.value = false;
     }
   } catch (error) {
     console.error('获取聊天记录失败：', error);
@@ -365,6 +400,16 @@ const getChatHistory = async () => {
       title: '获取聊天记录失败',
       icon: 'none'
     });
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+// 监听滚动事件
+const onScrollChange = (e: any) => {
+  if (e.detail.scrollTop === 0 && hasMore.value) {
+    lastScrollTop.value = e.detail.scrollHeight;
+    getChatHistory();
   }
 };
 
@@ -385,13 +430,20 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss" scoped>
-/* 样式部分与原代码保持一致，无需修改 */
 .chat-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
   background: #f5f6fa;
 }
+
+.loading-more {
+  text-align: center;
+  padding: 20rpx 0;
+  color: #999;
+  font-size: 24rpx;
+}
+
 .chat-list {
   flex: 1;
   overflow: hidden;

@@ -1,5 +1,5 @@
 <template>
-  <view class="child-archive-page">
+  <view class="child-manage-page">
     <up-navbar title="儿童专属档案" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
 	</up-navbar>
 
@@ -227,7 +227,7 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
-.child-archive-page {
+.child-manage-page {
   background-color: #f8f9fa;
   height: 100vh;
   display: flex;

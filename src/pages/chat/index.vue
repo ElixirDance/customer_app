@@ -3,8 +3,20 @@
     <up-navbar title="语音聊天" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
     </up-navbar>
     <!-- 聊天记录区 -->
-    <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation @scroll="onScrollChange">
-      <view v-if="isLoading" class="loading-more">加载中...</view>
+    <scroll-view 
+      class="chat-list" 
+      :scroll-y="true" 
+      :scroll-top="scrollTop" 
+      scroll-with-animation
+      @scroll="onScrollChange"
+      :refresher-enabled="true"
+      :refresher-triggered="isLoading"
+      @refresherrefresh="onRefresh"
+    >
+      <view class="pull-down-tip">
+        <view v-if="hasMore" class="loading-more">{{isLoading ? '加载中...' : '上拉加载更多'}}</view>
+        <view v-else class="loading-more">没有更多消息了</view>
+      </view>
       <view v-for="(msg, idx) in chatList" :key="msg.id || idx" :class="['chat-item', msg.role]">
         <view class="bubble-wrap">
           <view class="msg-time">{{formatTime(msg.time)}}</view>
@@ -77,7 +89,6 @@ const pageSize = 20;
 const firstId = ref(-1);
 const isLoading = ref(false);
 const hasMore = ref(true);
-const lastScrollTop = ref(0);
 const isFirstLoad = ref(true);
 
 function onBack() {
@@ -349,18 +360,18 @@ const formatTime = (time) => {
 };
 
 // 获取聊天记录
-const getChatHistory = async () => {
-  if (isLoading.value || !hasMore.value) return;
+const getChatHistory = async (isRefresh = false) => {
+  if (isLoading.value) return;
   
   try {
     isLoading.value = true;
     const result = await getChatMessage({
-      firstId: firstId.value,
+      firstId: isRefresh ? -1 : firstId.value,
       sortOrder: 'desc',
       pageSize
     });
     
-    if (result.data && result.data.length > 0) {
+    if (result.code === 0 && result.data) {
       // 将消息转换为聊天列表格式
       const newMessages = result.data.map(msg => ({
         role: msg.senderType === 1 ? 'parent' : 'child',
@@ -371,35 +382,42 @@ const getChatHistory = async () => {
         id: msg.id
       }));
       
-      // 更新firstId为最早消息的id
-      firstId.value = newMessages[newMessages.length - 1].id;
-      
-      // 如果是首次加载，直接赋值；否则将新消息添加到列表前面
-      if (isFirstLoad.value) {
-        chatList.value = newMessages;
-        isFirstLoad.value = false;
-        nextTick(scrollToBottom);
+      if (newMessages.length > 0) {
+        // 更新firstId为最早消息的id
+        firstId.value = newMessages[newMessages.length - 1].id;
+        
+        // 如果是刷新或首次加载，直接赋值；否则将新消息添加到列表前面
+        if (isRefresh || isFirstLoad.value) {
+          chatList.value = newMessages;
+          isFirstLoad.value = false;
+          nextTick(scrollToBottom);
+        } else {
+          chatList.value = [...newMessages, ...chatList.value];
+        }
+        
+        // 判断是否还有更多数据
+        hasMore.value = newMessages.length === pageSize;
       } else {
-        chatList.value = [...newMessages, ...chatList.value];
-        // 恢复滚动位置
-        nextTick(() => {
-          if (lastScrollTop.value) {
-            scrollTop.value = lastScrollTop.value;
-          }
-        });
+        hasMore.value = false;
       }
-      
-      // 判断是否还有更多数据
-      hasMore.value = result.data.length === pageSize;
     } else {
-      hasMore.value = false;
+      throw new Error(result.message || '获取聊天记录失败');
     }
   } catch (error) {
     console.error('获取聊天记录失败：', error);
-    uni.showToast({
-      title: '获取聊天记录失败',
-      icon: 'none'
-    });
+    // 只在首次加载时显示错误提示
+    if (isFirstLoad.value) {
+      uni.showToast({
+        title: '获取聊天记录失败',
+        icon: 'none',
+        duration: 2000
+      });
+    }
+    // 出错时重置状态
+    if (isRefresh) {
+      firstId.value = -1;
+      hasMore.value = true;
+    }
   } finally {
     isLoading.value = false;
   }
@@ -407,10 +425,20 @@ const getChatHistory = async () => {
 
 // 监听滚动事件
 const onScrollChange = (e: any) => {
-  if (e.detail.scrollTop === 0 && hasMore.value) {
-    lastScrollTop.value = e.detail.scrollHeight;
+  if (isLoading.value || !hasMore.value) return;
+  
+  const { scrollTop } = e.detail;
+  // 当滚动到顶部附近时触发加载
+  if (scrollTop < 20) {
     getChatHistory();
   }
+};
+
+// 下拉刷新
+const onRefresh = () => {
+  firstId.value = -1;
+  hasMore.value = true;
+  getChatHistory(true);
 };
 
 // 生命周期钩子
@@ -437,9 +465,12 @@ onUnmounted(() => {
   background: #f5f6fa;
 }
 
+.pull-down-tip {
+  padding: 20rpx 0;
+}
+
 .loading-more {
   text-align: center;
-  padding: 20rpx 0;
   color: #999;
   font-size: 24rpx;
 }

@@ -22,6 +22,7 @@ import { useTabbarStore } from "@/store/tabbar";
 import { redirect } from "@/utils";
 import { urlFormat } from "@/utils/format";
 import { imageFormat } from "@/utils/format";
+import { onShow } from "@dcloudio/uni-app";
 
 const tabbarStore = useTabbarStore();
 

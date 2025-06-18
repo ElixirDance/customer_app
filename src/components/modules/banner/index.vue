@@ -19,7 +19,7 @@
                         <image class="catnav-logo" mode="aspectFit" :style="logoFormat.logoHeight" :src="imageFormat(logoFormat.logoPic?.picUrl || '')" />
                     </template> -->
                     <view class="btn-box" @click="redirect({ url: '/pages/index/index' })">
-                        <text class="iconfont-h5 icon-shouye"></text>
+                        <image class="catnav-logo" mode="aspectFit"  :src="imageFormat('https://oss.tigshop.com/img/gallery/202506/17502367225OBvLROqi9Qqcsv31a.png?x-oss-process=image/resize,m_pad,h_200,h_200')" />
                     </view>
                     <view class="search-top">
                         <view
@@ -448,8 +448,9 @@ onMounted(async () => {
     align-items: center;
     justify-content: center;
     margin-right: 20rpx;
-    .icon-shouye {
-        font-size: 34rpx;
+    .catnav-logo {
+        width: 40rpx;
+        height: 40rpx;
     }
 }
 

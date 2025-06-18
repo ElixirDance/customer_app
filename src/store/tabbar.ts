@@ -11,6 +11,17 @@ import ico1h from "@/static/images/common/ico_1h.png";
 import ico2h from "@/static/images/common/ico_2h.png";
 import ico3h from "@/static/images/common/ico_3h.png";
 import ico4h from "@/static/images/common/ico_4h.png";
+// import ico5 from "@/static/images/common/store.png";
+// import ico5h from "@/static/images/common/store_red.png";
+const icon_shangcheng = 'https://oss.tigshop.com/img/gallery/202506/1750235706G3T0k4KjmVXSlLlBO5.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+const icon_shangcheng_active = 'https://oss.tigshop.com/img/gallery/202506/1750235723t3RllCno9e7TjiY5pu.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+const icon_xuexi = 'https://oss.tigshop.com/img/gallery/202506/17502367225OBvLROqi9Qqcsv31a.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+const icon_xuexi_active = 'https://oss.tigshop.com/img/gallery/202506/1750236722U8VxhtEUvshKQnhwak.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+const icon_shebei = 'https://oss.tigshop.com/img/gallery/202506/1750236722tDpqOsWqa6TCBJgOsN.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+const icon_shebei_active = 'https://oss.tigshop.com/img/gallery/202506/1750236722NBgVSHeVLc9ppjC34o.png?x-oss-process=image/resize,m_pad,h_200,h_200'
+
+
+
 
 export const useTabbarStore = defineStore("tabbar", () => {
     
@@ -54,21 +65,21 @@ export const useTabbarStore = defineStore("tabbar", () => {
 			
 			tabbarList.value = [...tabbarList.value, {
 				link: '/pages/index/index',
-				image: firstItem.image,
-				activeImage: firstItem.activeImage,
-                text: '首页',
+				image: icon_xuexi,
+				activeImage: icon_xuexi_active,
+                text: '学习',
                 isMall:false
 			},{
 				link: '/pages/mall/index/index',
-				image: firstItem.image,
-				activeImage: firstItem.activeImage,
+				image: icon_shangcheng,
+				activeImage: icon_shangcheng_active,
                 text: '商城',
                 isMall:false
 			},{
 				link: '/pages/demo/index',
-				image: firstItem.image,
-				activeImage: firstItem.activeImage,
-                text: '测试',
+				image: icon_shebei,
+				activeImage: icon_shebei_active,
+                text: '设备',
                 isMall:false
 			}]
 			
@@ -76,21 +87,21 @@ export const useTabbarStore = defineStore("tabbar", () => {
             tabbarList.value = [
                 {
                     link: '/pages/index/index',
-                    image: ico1,
-                    activeImage: ico1h,
-                    text: '首页',
+                    image: icon_xuexi,
+                    activeImage: icon_xuexi_active,
+                    text: '学习',
                     isMall:false
                 },{
                     link: '/pages/mall/index/index',
-                    image: ico1,
-                    activeImage: ico1h,
+                    image: icon_shangcheng,
+                    activeImage: icon_shangcheng_active,
                     text: '商城',
                     isMall:false
                 },{
                     link: '/pages/demo/index',
-                    image: ico1,
-                    activeImage: ico1h,
-                    text: '测试',
+                    image: icon_shebei,
+                    activeImage: icon_shebei_active,
+                    text: '设备',
                     isMall:false
                 },
                 {

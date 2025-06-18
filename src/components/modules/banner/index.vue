@@ -15,9 +15,12 @@
                 <view class="circle" :style="circleStyle"></view>
                 <view class="bar">
                     <view :style="`padding-top: ${index == 0 ? saveHeightNum : 0}px`"></view>
-                    <template v-if="logoFormat.logoPic?.picUrl">
+                    <!-- <template v-if="logoFormat.logoPic?.picUrl">
                         <image class="catnav-logo" mode="aspectFit" :style="logoFormat.logoHeight" :src="imageFormat(logoFormat.logoPic?.picUrl || '')" />
-                    </template>
+                    </template> -->
+                    <view class="btn-box" @click="redirect({ url: '/pages/index/index' })">
+                        <text class="iconfont-h5 icon-shouye"></text>
+                    </view>
                     <view class="search-top">
                         <view
                             class="menu"
@@ -30,7 +33,12 @@
                                 :style="`width: ${module.bannerStyle?.searchIconSize}px;height:${module.bannerStyle?.searchIconSize}px`"
                             />
                         </view>
-                        <view class="search" @click="redirect({ url: '/pages/mall/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
+                        <view
+                            class="search"
+                            @click="redirect({ url: '/pages/mall/search/index' })"
+                            :style="searchStyle"
+                            v-if="module.searchContent?.showSearch"
+                        >
                             <view class="search-icon" :style="`color:${module.bannerStyle?.searchFontColor}`"
                                 ><text class="iconfont-h5 icon-sousuo1"></text
                             ></view>
@@ -100,7 +108,12 @@
                                 :style="`width: ${module.bannerStyle?.searchIconSize}px;height:${module.bannerStyle?.searchIconSize}px`"
                             />
                         </view>
-                        <view class="search" @click="redirect({ url: '/pages/mall/search/index' })" :style="searchStyle" v-if="module.searchContent?.showSearch">
+                        <view
+                            class="search"
+                            @click="redirect({ url: '/pages/mall/search/index' })"
+                            :style="searchStyle"
+                            v-if="module.searchContent?.showSearch"
+                        >
                             <view class="search-icon" :style="`color:${module.bannerStyle?.searchFontColor}`"
                                 ><text class="iconfont-h5 icon-sousuo1"></text
                             ></view>
@@ -426,6 +439,20 @@ onMounted(async () => {
     padding: 0px 0px 10px;
     z-index: 9;
 }
+.btn-box {
+    width: 70rpx;
+    height: 70rpx;
+    background-color: #f8f8f8;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20rpx;
+    .icon-shouye {
+        font-size: 34rpx;
+    }
+}
+
 .search-top {
     display: flex;
     flex-wrap: nowrap;

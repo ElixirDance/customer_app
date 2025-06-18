@@ -132,7 +132,7 @@ onShow(() => {
             });
         }, 20);
     }
-    // uni.hideTabBar();
+    uni.hideTabBar();
 });
 
 onShareAppMessage((res) => {
@@ -148,21 +148,21 @@ onShareTimeline(() => {
 
 onBackPress((options) => {
     // options.from: backbutton(物理返回键) | navigateBack(调用API返回) | gesture(手势返回)
-    console.log('监听到返回事件，来源:', options.from);
-    
+    console.log("监听到返回事件，来源:", options.from);
+
     // 返回 true 表示阻止默认返回行为，返回 false 或不返回任何值表示同意默认返回行为
-    if (options.from === 'navigateBack') {
-      console.log('用户执行了滑动返回操作');
-      // 在这里处理滑动返回的逻辑
-      // 例如显示确认对话框、保存数据等
-      
-      // 如果需要阻止滑动返回，返回 true
-      // return true;
+    if (options.from === "navigateBack") {
+        console.log("用户执行了滑动返回操作");
+        // 在这里处理滑动返回的逻辑
+        // 例如显示确认对话框、保存数据等
+
+        // 如果需要阻止滑动返回，返回 true
+        // return true;
     }
-    
+
     // 默认不阻止返回
     return false;
-})
+});
 </script>
 <style>
 page {

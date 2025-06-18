@@ -538,10 +538,10 @@
         "borderStyle": "white",
         "list": [
             {
-                "pagePath": "pages/index/index"
+                "pagePath": "pages/mall/index/index"
             },
             {
-                "pagePath": "pages/cart/index"
+                "pagePath": "pages/mall/cart/index"
             }
         ]
     },

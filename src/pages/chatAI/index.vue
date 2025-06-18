@@ -15,17 +15,11 @@
         </view>
         <view class="msg-content">{{ msg.content }}</view>
       </view>
-      <view v-if="loading" class="chat-item ai">
-        <view class="avatar">
-          <image :src="aiAvatar" class="avatar-img" />
-        </view>
-        <view class="msg-content loading">正在生成回复...</view>
-      </view>
     </scroll-view>
     <!-- 输入区 -->
     <view class="input-bar">
-      <input class="input" v-model="inputValue" placeholder="请输入您的育儿问题..." @confirm="sendMsg" :disabled="loading" />
-      <button class="send-btn" @tap="sendMsg" :disabled="!inputValue.trim() || loading">发送</button>
+      <input class="input" v-model="inputValue" placeholder="请输入您的育儿问题..." @confirm="sendMsg" />
+      <button class="send-btn" @tap="sendMsg" :disabled="!inputValue.trim()">发送</button>
     </view>
   </view>
 </template>
@@ -41,7 +35,6 @@ const inputValue = ref('');
 const chatList = ref([
   { role: 'ai', content: '您好，我是智能育儿助手，请问有什么育儿问题需要咨询？' }
 ]);
-const loading = ref(false);
 const scrollTop = ref(0);
 let ws: UniApp.SocketTask | null = null;
 const WS_URL = 'ws://192.168.3.11:3000';
@@ -52,6 +45,9 @@ const typingSpeed = 50; // 打字速度（毫秒/字符）
 let typingTimer: number | null = null;
 let currentTypingText = '';
 let pendingText = '';
+// 新增：用于缓存首包内容
+let firstTextBuffer: string[] = [];
+let firstTextTimeout: number | null = null;
 
 // 打字机效果函数
 const typeText = () => {
@@ -122,18 +118,32 @@ const connectWebSocket = () => {
       try {
         const data = JSON.parse(res.data);
         if (data.type === 'text' && currentAiMessageIndex >= 0) {
-          // 将新文本添加到待处理队列
-          pendingText += data.content;
-          
-          // 如果还没有开始打字，启动打字效果
-          if (!typingTimer) {
-            currentTypingText = chatList.value[currentAiMessageIndex].content;
-            typingTimer = setInterval(typeText, typingSpeed);
+          if (chatList.value[currentAiMessageIndex].content === 'AI 正在输入...') {
+            // 首次收到，启动 1 秒 loading，缓存内容
+            firstTextBuffer.push(data.content);
+            if (!firstTextTimeout) {
+              firstTextTimeout = setTimeout(() => {
+                chatList.value[currentAiMessageIndex].content = '';
+                currentTypingText = '';
+                pendingText = firstTextBuffer.join('');
+                typingTimer = setInterval(typeText, typingSpeed);
+                firstTextBuffer = [];
+                firstTextTimeout = null;
+              }, 1000);
+            }
+          } else if (firstTextTimeout) {
+            // 1 秒内的后续内容也缓存
+            firstTextBuffer.push(data.content);
+          } else {
+            // 1 秒后正常追加
+            pendingText += data.content;
+            if (!typingTimer) {
+              currentTypingText = chatList.value[currentAiMessageIndex].content;
+              typingTimer = setInterval(typeText, typingSpeed);
+            }
           }
         }
         if (data.done) {
-          loading.value = false;
-          // 确保所有文本都显示完成
           if (typingTimer) {
             clearInterval(typingTimer);
             typingTimer = null;
@@ -144,6 +154,12 @@ const connectWebSocket = () => {
             if (currentAiMessageIndex >= 0) {
               chatList.value[currentAiMessageIndex].content = currentTypingText;
             }
+          }
+          // 清理 firstTextBuffer 和定时器
+          if (firstTextTimeout) {
+            clearTimeout(firstTextTimeout);
+            firstTextTimeout = null;
+            firstTextBuffer = [];
           }
         }
       } catch (error) {
@@ -156,7 +172,7 @@ const connectWebSocket = () => {
 // 发送消息
 const sendMsg = async () => {
   const question = inputValue.value.trim();
-  if (!question || loading.value) return;
+  if (!question) return;
   
   // 医学类问题拦截
   if (/医|药|疾病|处方|诊断|治疗|发烧|咳嗽|感冒|新冠|疫苗|用药|挂号|医院|医生/.test(question)) {
@@ -168,7 +184,6 @@ const sendMsg = async () => {
   
   chatList.value.push({ role: 'user', content: question });
   inputValue.value = '';
-  loading.value = true;
   nextTick(() => scrollToBottom());
 
   try {
@@ -181,29 +196,27 @@ const sendMsg = async () => {
       throw new Error('WebSocket连接失败');
     }
 
-    // 添加AI回复占位
+    // 添加AI回复loading占位
     currentAiMessageIndex = chatList.value.length;
-    chatList.value.push({ role: 'ai', content: '' });
+    chatList.value.push({ role: 'ai', content: 'AI 正在输入...' });
 
     // 发送消息
     ws.send({
       data: JSON.stringify({
         message: question,
-		type: 'chat'
+        type: 'chat'
       }),
       success: () => {
         console.log('消息发送成功');
       },
       fail: (err) => {
         console.error('消息发送失败:', err);
-        loading.value = false;
         chatList.value[currentAiMessageIndex].content = '抱歉，消息发送失败，请稍后重试。';
       }
     });
 
   } catch (error) {
     console.error('WebSocket操作失败:', error);
-    loading.value = false;
     chatList.value.push({ 
       role: 'ai', 
       content: '抱歉，服务暂时不可用，请稍后再试。' 

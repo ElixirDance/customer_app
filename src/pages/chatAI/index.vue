@@ -31,13 +31,10 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, nextTick } from 'vue';
+import { ref, onMounted, nextTick, onUnmounted } from 'vue';
 // 图片资源引用
 import userAvatar from '@/static/images/user.png';
 import aiAvatar from '@/static/images/robot.png';
-
-// const userAvatar = ref('/static/user.png');
-// const aiAvatar = ref('/static/ai.png');
 
 // 状态管理
 const inputValue = ref('');
@@ -46,10 +43,115 @@ const chatList = ref([
 ]);
 const loading = ref(false);
 const scrollTop = ref(0);
+let ws: UniApp.SocketTask | null = null;
+const WS_URL = 'ws://192.168.3.11:3000';
+let currentAiMessageIndex = -1;
+
+// 打字机效果相关
+const typingSpeed = 50; // 打字速度（毫秒/字符）
+let typingTimer: number | null = null;
+let currentTypingText = '';
+let pendingText = '';
+
+// 打字机效果函数
+const typeText = () => {
+  if (pendingText.length === 0) {
+    if (typingTimer) {
+      clearInterval(typingTimer);
+      typingTimer = null;
+    }
+    return;
+  }
+
+  currentTypingText += pendingText[0];
+  pendingText = pendingText.slice(1);
+  
+  if (currentAiMessageIndex >= 0) {
+    chatList.value[currentAiMessageIndex].content = currentTypingText;
+    nextTick(() => scrollToBottom());
+  }
+};
 
 function onBack() {
-	uni.navigateBack()
+  if (ws) {
+    ws.close({ code: 1000, reason: '用户主动关闭' });
+    ws = null;
+  }
+  uni.navigateBack();
 }
+
+// 建立WebSocket连接
+const connectWebSocket = () => {
+  return new Promise<void>((resolve, reject) => {
+    if (ws) {
+      ws.close({ code: 1000, reason: '重新连接' });
+    }
+    
+    ws = uni.connectSocket({
+      url: WS_URL,
+      success: () => {
+        console.log('WebSocket连接成功');
+      },
+      fail: (err) => {
+        console.error('WebSocket连接失败:', err);
+        reject(err);
+      }
+    });
+
+    if (!ws) {
+      reject(new Error('WebSocket连接创建失败'));
+      return;
+    }
+
+    ws.onOpen((res: UniApp.OnSocketOpenCallbackResult) => {
+      console.log('WebSocket连接已打开', res);
+      resolve();
+    });
+
+    ws.onError((err: UniApp.GeneralCallbackResult) => {
+      console.error('WebSocket错误:', err);
+      reject(err);
+    });
+
+    ws.onClose((res: UniApp.GeneralCallbackResult) => {
+      console.log('WebSocket连接已关闭', res);
+      ws = null;
+    });
+
+    ws.onMessage((res: UniApp.OnSocketMessageCallbackResult) => {
+      try {
+        const data = JSON.parse(res.data);
+        if (data.type === 'text' && currentAiMessageIndex >= 0) {
+          // 将新文本添加到待处理队列
+          pendingText += data.content;
+          
+          // 如果还没有开始打字，启动打字效果
+          if (!typingTimer) {
+            currentTypingText = chatList.value[currentAiMessageIndex].content;
+            typingTimer = setInterval(typeText, typingSpeed);
+          }
+        }
+        if (data.done) {
+          loading.value = false;
+          // 确保所有文本都显示完成
+          if (typingTimer) {
+            clearInterval(typingTimer);
+            typingTimer = null;
+          }
+          if (pendingText.length > 0) {
+            currentTypingText += pendingText;
+            pendingText = '';
+            if (currentAiMessageIndex >= 0) {
+              chatList.value[currentAiMessageIndex].content = currentTypingText;
+            }
+          }
+        }
+      } catch (error) {
+        console.error('解析消息失败:', error);
+      }
+    });
+  });
+};
 
 // 发送消息
 const sendMsg = async () => {
@@ -60,35 +162,66 @@ const sendMsg = async () => {
   if (/医|药|疾病|处方|诊断|治疗|发烧|咳嗽|感冒|新冠|疫苗|用药|挂号|医院|医生/.test(question)) {
     chatList.value.push({ role: 'ai', content: '很抱歉，医学类问题请咨询专业医生或医疗机构。' });
     inputValue.value = '';
-    nextTick(scrollToBottom);
+    nextTick(() => scrollToBottom());
     return;
   }
   
   chatList.value.push({ role: 'user', content: question });
   inputValue.value = '';
   loading.value = true;
-  nextTick(scrollToBottom);
-  
-  // 模拟AI接口调用
+  nextTick(() => scrollToBottom());
+
   try {
-    const aiReply = await mockAIReply(question);
-    chatList.value.push({ role: 'ai', content: aiReply });
-  } catch (e) {
-    chatList.value.push({ role: 'ai', content: '抱歉，服务暂时不可用，请稍后再试。' });
+    // 确保WebSocket连接
+    if (!ws) {
+      await connectWebSocket();
+    }
+
+    if (!ws) {
+      throw new Error('WebSocket连接失败');
+    }
+
+    // 添加AI回复占位
+    currentAiMessageIndex = chatList.value.length;
+    chatList.value.push({ role: 'ai', content: '' });
+
+    // 发送消息
+    ws.send({
+      data: JSON.stringify({
+        message: question,
+		type: 'chat'
+      }),
+      success: () => {
+        console.log('消息发送成功');
+      },
+      fail: (err) => {
+        console.error('消息发送失败:', err);
+        loading.value = false;
+        chatList.value[currentAiMessageIndex].content = '抱歉，消息发送失败，请稍后重试。';
+      }
+    });
+
+  } catch (error) {
+    console.error('WebSocket操作失败:', error);
+    loading.value = false;
+    chatList.value.push({ 
+      role: 'ai', 
+      content: '抱歉，服务暂时不可用，请稍后再试。' 
+    });
   }
-  
-  loading.value = false;
-  nextTick(scrollToBottom);
 };
 
-// 模拟AI回复
-const mockAIReply = (q: string): Promise<string> => {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      resolve('这是AI根据您的问题和儿童行为数据生成的个性化建议示例。');
-    }, 1200);
-  });
-};
+// 组件卸载时清理WebSocket连接
+onUnmounted(() => {
+  if (ws) {
+    ws.close({ code: 1000, reason: '组件卸载' });
+    ws = null;
+  }
+  if (typingTimer) {
+    clearInterval(typingTimer);
+    typingTimer = null;
+  }
+});
 
 // 滚动到底部
 const scrollToBottom = () => {

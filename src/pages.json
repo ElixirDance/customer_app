@@ -76,7 +76,12 @@
             "path": "pages/analytics/index"
         },
         {
-            "path": "pages/chatAI/index"
+            "path": "pages/chatAI/index",
+            "style": {
+                "app-plus": {
+                    "softinputMode": "adjustResize"
+                }
+            }
         },
         {
             "path": "pages/chat/index"

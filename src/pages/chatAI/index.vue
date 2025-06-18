@@ -297,6 +297,10 @@ onMounted(() => {
   }
 }
 .input-bar {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
   display: flex;
   align-items: center;
   padding: 16rpx 24rpx 24rpx 24rpx;

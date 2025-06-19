@@ -43,6 +43,7 @@ const chatList = ref<any[]>([
 ]);
 const scrollTop = ref(0);
 const scrollIntoView = ref(''); // 新增：用于scroll-into-view
+const currentScrollTop = ref(0); // 新增：跟踪当前滚动位置
 const showAiTip = ref(true); // 控制AI提示的显示状态
 let ws: UniApp.SocketTask | null = null;
 const WS_URL = 'ws://192.168.3.11:3000';
@@ -82,10 +83,10 @@ const typeText = () => {
   
   if (currentAiMessageIndex >= 0) {
     chatList.value[currentAiMessageIndex].content = currentTypingText;
-    // 打字过程中，如果用户没有主动滚动，则自动滚动到底部
+    // 打字过程中，如果用户没有主动滚动，则检查是否需要滚动到底部
     if (!userScrolling.value) {
       nextTick(() => {
-        scrollToBottom();
+        checkNeedScrollToBottom();
       });
     }
   }
@@ -189,7 +190,10 @@ const connectWebSocket = () => {
           // AI回复完成后，如果用户没有主动滚动，则滚动到底部
           if (!userScrolling.value) {
             nextTick(() => {
-              scrollToBottom();
+              // 延迟一点时间确保DOM完全渲染后再滚动
+              setTimeout(() => {
+                scrollIntoView.value = `msg-${chatList.value.length - 1}`;
+              }, 100);
             });
           }
         }
@@ -229,8 +233,9 @@ const sendMsg = async () => {
   inputValue.value = '';
   // 发送消息时重置用户滚动状态
   userScrolling.value = false;
+  // 检查是否需要滚动到底部，避免消息被遮挡
   nextTick(() => {
-    scrollToBottom();
+    checkNeedScrollToBottom();
   });
 
   try {
@@ -249,6 +254,11 @@ const sendMsg = async () => {
     // 添加AI回复loading占位
     currentAiMessageIndex = chatList.value.length;
     chatList.value.push({ role: 'ai', content: 'AI 正在输入...' });
+    
+    // 检查是否需要滚动到底部，避免AI回复被遮挡
+    nextTick(() => {
+      checkNeedScrollToBottom();
+    });
 
     // 发送消息
     ws.send({
@@ -296,11 +306,20 @@ onUnmounted(() => {
     clearTimeout(firstTextTimeout);
     firstTextTimeout = null;
   }
+  if (checkScrollTimer) {
+    clearTimeout(checkScrollTimer);
+    checkScrollTimer = null;
+  }
   isAiResponding.value = false;
 });
 
 // 滚动到底部
 const scrollToBottom = () => {
+  // 如果用户正在主动滚动，不强制滚动到底部
+  if (userScrolling.value) {
+    return;
+  }
+  
   // 使用 nextTick 确保 DOM 更新完成后再滚动
   nextTick(() => {
     setTimeout(() => {
@@ -332,19 +351,56 @@ onMounted(() => {
 // 滚动事件监听
 const onScroll = (event: any) => {
   // 检测用户是否主动滚动
-  const { scrollTop: currentScrollTop } = event.detail;
+  const { scrollTop: newScrollTop } = event.detail;
   
   // 如果用户向上滚动（scrollTop减小），说明用户在查看历史消息
-  if (currentScrollTop < scrollTop.value) {
+  if (newScrollTop < currentScrollTop.value) {
     userScrolling.value = true;
   }
   
   // 如果滚动位置很大（接近底部），重置用户滚动状态
-  if (currentScrollTop > 999000) {
+  if (newScrollTop > 999000) {
     userScrolling.value = false;
   }
   
-  scrollTop.value = currentScrollTop;
+  // 更新当前滚动位置，但不更新scrollTop.value
+  currentScrollTop.value = newScrollTop;
+};
+
+// 检查是否需要滚动到底部
+let checkScrollTimer: number | null = null;
+const checkNeedScrollToBottom = () => {
+  if (userScrolling.value) return;
+  
+  // 防抖处理，避免频繁调用
+  if (checkScrollTimer) {
+    clearTimeout(checkScrollTimer);
+  }
+  
+  checkScrollTimer = setTimeout(() => {
+    const query = uni.createSelectorQuery();
+    query.select('.chat-list').boundingClientRect();
+    query.selectAll('.chat-item').boundingClientRect();
+    query.exec((res) => {
+      if (res && res[0] && res[1]) {
+        const scrollViewHeight = res[0].height;
+        const chatItems = res[1];
+        let totalHeight = 0;
+        
+        chatItems.forEach((item: any) => {
+          totalHeight += item.height;
+        });
+        
+        // 如果内容高度接近或超过滚动区域高度，需要滚动到底部
+        if (totalHeight >= scrollViewHeight - 100) {
+          nextTick(() => {
+            scrollIntoView.value = `msg-${chatList.value.length - 1}`;
+          });
+        }
+      }
+    });
+    checkScrollTimer = null;
+  }, 50); // 50ms防抖
 };
 </script>
 
@@ -376,7 +432,7 @@ const onScroll = (event: any) => {
 .chat-list {
   flex: 1;
   overflow: auto;
-  padding: 16rpx 0;
+  padding: 16rpx 0 0;
 }
 .chat-item {
   display: flex;

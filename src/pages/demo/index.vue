@@ -9,6 +9,7 @@
             <up-cell title="分析" isLink url="/pages/analytics/index"></up-cell>
             <up-cell title="聊天AI" isLink url="/pages/chatAI/index"></up-cell>
             <up-cell title="跟孩子聊天" isLink url="/pages/chat/index"></up-cell>
+            <up-cell title="课程教案生成" isLink url="/pages/lessonPlan/index"></up-cell>
         </up-cell-group>
     </tig-layout>
 </template>

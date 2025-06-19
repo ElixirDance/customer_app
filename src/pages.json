@@ -87,6 +87,14 @@
             "path": "pages/chat/index"
         },
         {
+            "path": "pages/lessonPlan/index",
+            "style": {
+                "app-plus": {
+                    "softinputMode": "adjustResize"
+                }
+            }
+        },
+        {
             "path": "pages/mall/index/index",
             "style": {
                 "enablePullDownRefresh": true

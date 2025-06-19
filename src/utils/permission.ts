@@ -29,7 +29,8 @@ const whiteList = [
 	"/pages/parentManage/index",
 	"/pages/analytics/index",
 	"/pages/chatAI/index",
-	"/pages/chat/index"
+	"/pages/chat/index",
+	"/pages/lessonPlan/index",
 ];
 
 function hasPermission(url: string): boolean {

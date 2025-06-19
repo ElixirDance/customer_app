@@ -47,6 +47,8 @@
     <!-- 语音输入区 -->
     <view class="voice-bar">
       <button class="voice-btn" :class="{active: recordBtnActive}" @touchstart="startRecord" @touchend="stopRecord" @touchcancel="cancelRecord" @touchmove="moveRecord">{{recordBtnText}}</button>
+      <!-- 测试按钮：模拟接收消息 -->
+      <button class="test-btn" @tap="simulateReceiveMessage">测试接收消息</button>
     </view>
     <!-- 权限提示弹窗 -->
     <view v-if="showAuthModal" class="auth-modal">
@@ -73,8 +75,8 @@ import { getChatMessage } from '@/api/chat/chat';
 const chatList = ref<any[]>([]);
 const scrollTop = ref(0);
 const showAuthModal = ref(false);
-const recorderManager = ref(null);
-const innerAudioContext = ref(null);
+const recorderManager = ref<any>(null);
+const innerAudioContext = ref<any>(null);
 const recording = ref(false);
 const recordStartTime = ref(0);
 const recordCancel = ref(false);
@@ -250,7 +252,7 @@ const startRecord = async () => {
 };
 
 // 录音时手指上滑取消
-const moveRecord = (e) => {
+const moveRecord = (e: any) => {
   // 判断是否上滑（以y轴为例，实际可根据页面高度动态调整）
   if (e.touches && e.touches[0].clientY < uni.getSystemInfoSync().windowHeight - uni.upx2px(300)) {
     recordCancel.value = true;
@@ -304,11 +306,48 @@ const addVoiceMsg = (role: string, duration: number, url: string) => {
     String(now.getHours()).padStart(2, '0') + ':' +
     String(now.getMinutes()).padStart(2, '0');
   chatList.value.push({ role, duration, url, playing: false, time });
-  nextTick(scrollToBottom);
+  
+  // 使用多种方法确保滚动到底部
+  nextTick(() => {
+    scrollToBottom();
+    // 备用方案：延迟后再次尝试
+    setTimeout(() => {
+      simpleScrollToBottom();
+    }, 200);
+  });
+};
+
+// 模拟接收新消息（用于测试）
+const simulateReceiveMessage = () => {
+  const now = new Date();
+  const time = now.getFullYear() + '-' +
+    String(now.getMonth() + 1).padStart(2, '0') + '-' +
+    String(now.getDate()).padStart(2, '0') + ' ' +
+    String(now.getHours()).padStart(2, '0') + ':' +
+    String(now.getMinutes()).padStart(2, '0');
+  
+  // 模拟接收一条来自孩子的语音消息
+  chatList.value.push({ 
+    role: 'child', 
+    duration: Math.floor(Math.random() * 10) + 3, // 3-12秒随机时长
+    url: 'https://example.com/voice.mp3', // 模拟语音文件URL
+    playing: false, 
+    time,
+    id: Date.now() // 使用时间戳作为临时ID
+  });
+  
+  // 使用多种方法确保滚动到底部
+  nextTick(() => {
+    scrollToBottom();
+    // 备用方案：延迟后再次尝试
+    setTimeout(() => {
+      simpleScrollToBottom();
+    }, 200);
+  });
 };
 
 // 播放语音
-const playVoice = (msg) => {
+const playVoice = (msg: any) => {
   if (!msg.url) {
     uni.showToast({
       title: '语音文件不存在',
@@ -331,7 +370,7 @@ const playVoice = (msg) => {
     msg.playing = false;
   });
   
-  innerAudioContext.value.onError((res) => {
+  innerAudioContext.value.onError((res: any) => {
     console.error('播放错误：', res);
     msg.playing = false;
     uni.showToast({
@@ -343,7 +382,51 @@ const playVoice = (msg) => {
 
 // 滚动到底部
 const scrollToBottom = () => {
-  scrollTop.value = 99999
+  console.log('开始滚动到底部');
+  // 使用 nextTick 确保 DOM 更新完成后再滚动
+  nextTick(() => {
+    // 延迟一点时间确保DOM完全渲染
+    setTimeout(() => {
+      // 方法1：使用 uni.createSelectorQuery 计算高度
+      const query = uni.createSelectorQuery();
+      query.select('.chat-list').boundingClientRect();
+      query.selectAll('.chat-item').boundingClientRect();
+      query.exec((res) => {
+        console.log('滚动查询结果:', res);
+        if (res && res[0] && res[1]) {
+          const scrollViewHeight = res[0].height;
+          const chatItems = res[1];
+          let totalHeight = 0;
+          
+          // 计算所有聊天项的总高度
+          chatItems.forEach((item: any) => {
+            totalHeight += item.height;
+          });
+          
+          console.log('滚动区域高度:', scrollViewHeight, '总内容高度:', totalHeight);
+          
+          // 设置滚动位置到底部
+          scrollTop.value = totalHeight - scrollViewHeight + 100; // 额外加100px确保滚动到底部
+          console.log('设置滚动位置:', scrollTop.value);
+        } else {
+          // 备用方案：使用一个足够大的值
+          scrollTop.value = 999999;
+          console.log('使用备用滚动方案:', scrollTop.value);
+        }
+      });
+    }, 100); // 延迟100ms确保DOM完全渲染
+  });
+};
+
+// 简单的滚动到底部方法（备用）
+const simpleScrollToBottom = () => {
+  console.log('使用简单滚动方法');
+  nextTick(() => {
+    setTimeout(() => {
+      scrollTop.value = 999999;
+      console.log('简单滚动设置位置:', scrollTop.value);
+    }, 50);
+  });
 };
 
 // 关闭权限提示
@@ -352,7 +435,7 @@ const closeAuthModal = () => {
 };
 
 // 格式化时间
-const formatTime = (time) => {
+const formatTime = (time: any) => {
   // 只显示时:分
   if (!time) return '';
   if (time.length > 5) return time.slice(-5);
@@ -373,7 +456,7 @@ const getChatHistory = async (isRefresh = false) => {
     
     if (result.code === 0 && result.data) {
       // 将消息转换为聊天列表格式
-      const newMessages = result.data.map(msg => ({
+      const newMessages = result.data.map((msg: any) => ({
         role: msg.senderType === 1 ? 'parent' : 'child',
         duration: msg.content?.duration || 0,
         url: msg.content?.url || '',
@@ -390,7 +473,13 @@ const getChatHistory = async (isRefresh = false) => {
         if (isRefresh || isFirstLoad.value) {
           chatList.value = newMessages;
           isFirstLoad.value = false;
-          nextTick(scrollToBottom);
+          nextTick(() => {
+            scrollToBottom();
+            // 备用方案：延迟后再次尝试
+            setTimeout(() => {
+              simpleScrollToBottom();
+            }, 200);
+          });
         } else {
           chatList.value = [...newMessages, ...chatList.value];
         }
@@ -564,6 +653,7 @@ onUnmounted(() => {
   box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.04);
   display: flex;
   justify-content: center;
+  gap: 20rpx;
 }
 .voice-btn {
   background: #409eff;
@@ -580,6 +670,22 @@ onUnmounted(() => {
 }
 .voice-btn.active {
   background: #2b7fd7;
+}
+.test-btn {
+  background: #67c23a;
+  color: #fff;
+  font-size: 28rpx;
+  border-radius: 40rpx;
+  padding: 0 40rpx;
+  height: 90rpx;
+  line-height: 90rpx;
+  box-shadow: 0 4rpx 16rpx rgba(103,194,58,0.12);
+  font-weight: bold;
+  letter-spacing: 1rpx;
+  transition: background 0.2s;
+}
+.test-btn:active {
+  background: #5daf34;
 }
 .auth-modal {
   position: fixed;

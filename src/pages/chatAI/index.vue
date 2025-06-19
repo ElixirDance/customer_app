@@ -7,7 +7,7 @@
       请输入您的育儿问题，机器人将结合儿童行为数据为您提供科学个性化建议（不支持医学类问题咨询）。
     </view>
     <!-- 对话区 -->
-    <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation>
+    <scroll-view class="chat-list" :scroll-y="true" :scroll-top="scrollTop" scroll-with-animation @scroll="onScroll" :scroll-into-view="scrollIntoView">
       <view v-for="(msg, idx) in chatList" :key="idx" :class="['chat-item', msg.role]">
         <view class="avatar">
           <image v-if="msg.role === 'user'" :src="userAvatar" class="avatar-img" />
@@ -15,6 +15,8 @@
         </view>
         <view class="msg-content">{{ msg.content }}</view>
       </view>
+      <!-- 底部占位元素，确保有足够的内容高度 -->
+      <view class="bottom-spacer" :id="'msg-' + (chatList.length - 1)"></view>
     </scroll-view>
     <!-- 输入区 -->
     <view class="input-bar">
@@ -22,6 +24,8 @@
       <button class="send-btn" :class="{ 'send-btn-disabled': isAiResponding }" @tap="sendMsg" :disabled="!inputValue.trim() || isAiResponding">
         {{ isAiResponding ? 'AI回复中...' : '发送' }}
       </button>
+    </view>
+    <view class="input-bar-box">
     </view>
   </view>
 </template>
@@ -38,6 +42,7 @@ const chatList = ref<any[]>([
   { role: 'ai', content: '您好，我是智能育儿助手，请问有什么育儿问题需要咨询？' }
 ]);
 const scrollTop = ref(0);
+const scrollIntoView = ref(''); // 新增：用于scroll-into-view
 const showAiTip = ref(true); // 控制AI提示的显示状态
 let ws: UniApp.SocketTask | null = null;
 const WS_URL = 'ws://192.168.3.11:3000';
@@ -45,6 +50,7 @@ let currentAiMessageIndex = -1;
 let typingTimer: number | null = null;
 let firstTextTimeout: number | null = null;
 const isAiResponding = ref(false); // 新增：跟踪AI是否正在回复中
+const userScrolling = ref(false); // 新增：跟踪用户是否正在滚动
 
 // 打字机效果相关
 const typingSpeed = 50; // 打字速度（毫秒/字符）
@@ -76,7 +82,12 @@ const typeText = () => {
   
   if (currentAiMessageIndex >= 0) {
     chatList.value[currentAiMessageIndex].content = currentTypingText;
-    // 移除打字过程中的滚动，只在打字结束时滚动
+    // 打字过程中，如果用户没有主动滚动，则自动滚动到底部
+    if (!userScrolling.value) {
+      nextTick(() => {
+        scrollToBottom();
+      });
+    }
   }
 };
 
@@ -175,10 +186,12 @@ const connectWebSocket = () => {
           // 服务端回复完成且打字结束，解除禁用状态
           isAiResponding.value = false;
           
-          // AI回复完成后滚动到底部
-          nextTick(() => {
-            scrollToBottom();
-          });
+          // AI回复完成后，如果用户没有主动滚动，则滚动到底部
+          if (!userScrolling.value) {
+            nextTick(() => {
+              scrollToBottom();
+            });
+          }
         }
       } catch (error) {
         console.error('解析消息失败:', error);
@@ -214,6 +227,8 @@ const sendMsg = async () => {
   
   chatList.value.push({ role: 'user', content: question });
   inputValue.value = '';
+  // 发送消息时重置用户滚动状态
+  userScrolling.value = false;
   nextTick(() => {
     scrollToBottom();
   });
@@ -289,31 +304,10 @@ const scrollToBottom = () => {
   // 使用 nextTick 确保 DOM 更新完成后再滚动
   nextTick(() => {
     setTimeout(() => {
-      // 使用 uni.createSelectorQuery 计算高度
-      const query = uni.createSelectorQuery();
-      query.select('.chat-list').boundingClientRect();
-      query.selectAll('.chat-item').boundingClientRect();
-      query.select('.input-bar').boundingClientRect();
-      query.exec((res) => {
-        if (res && res[0] && res[1]) {
-          const scrollViewHeight = res[0].height;
-          const chatItems = res[1];
-          const inputBarHeight = res[2] ? res[2].height : 120; // 调整默认高度为120rpx
-          let totalHeight = 0;
-          
-          // 计算所有聊天项的总高度
-          chatItems.forEach((item: any) => {
-            totalHeight += item.height;
-          });
-          
-          // 设置滚动位置到底部，考虑输入栏高度
-          scrollTop.value = totalHeight - scrollViewHeight + inputBarHeight + 20; // 减少额外间距
-        } else {
-          // 备用方案：使用一个足够大的值
-          scrollTop.value = 999999;
-        }
-      });
-    }, 100); // 增加延迟时间，确保DOM完全渲染
+      // 使用scroll-into-view滚动到最后一个消息
+      scrollIntoView.value = `msg-${chatList.value.length - 1}`;
+      console.log('滚动到底部，目标元素:', scrollIntoView.value);
+    }, 50);
   });
 };
 
@@ -322,6 +316,7 @@ const simpleScrollToBottom = () => {
   nextTick(() => {
     setTimeout(() => {
       scrollTop.value = 999999;
+      console.log('使用简单滚动方法');
     }, 30);
   });
 };
@@ -333,6 +328,24 @@ onMounted(() => {
     showAiTip.value = false;
   }, 3000);
 });
+
+// 滚动事件监听
+const onScroll = (event: any) => {
+  // 检测用户是否主动滚动
+  const { scrollTop: currentScrollTop } = event.detail;
+  
+  // 如果用户向上滚动（scrollTop减小），说明用户在查看历史消息
+  if (currentScrollTop < scrollTop.value) {
+    userScrolling.value = true;
+  }
+  
+  // 如果滚动位置很大（接近底部），重置用户滚动状态
+  if (currentScrollTop > 999000) {
+    userScrolling.value = false;
+  }
+  
+  scrollTop.value = currentScrollTop;
+};
 </script>
 
 <style lang="scss" scoped>
@@ -362,13 +375,13 @@ onMounted(() => {
 }
 .chat-list {
   flex: 1;
-  overflow: hidden;
-  padding: 20rpx 0 20rpx 0; /* 减少底部内边距，让scrollview和输入栏更好地衔接 */
+  overflow: auto;
+  padding: 16rpx 0;
 }
 .chat-item {
   display: flex;
   align-items: flex-start;
-  margin: 16rpx 32rpx;
+  margin: 0 32rpx 16rpx;
   &.user {
     flex-direction: row-reverse;
     .msg-content {
@@ -420,6 +433,9 @@ onMounted(() => {
   box-shadow: 0 -2rpx 12rpx rgba(0,0,0,0.04);
   z-index: 10; /* 确保输入栏在最上层 */
 }
+.input-bar-box {
+  height: 112rpx;
+}
 .input {
   flex: 1;
   height: 72rpx;
@@ -454,7 +470,7 @@ onMounted(() => {
 }
 
 .bottom-spacer {
-  height: 120rpx; /* 减少底部占位高度，让scrollview和输入栏更好地衔接 */
+  height: 120rpx; /* 底部占位高度，确保有足够空间 */
   width: 100%;
 }
 </style>

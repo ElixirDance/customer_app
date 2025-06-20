@@ -1,10 +1,26 @@
 <template>
   <view class="lesson-plan-container">
-    <up-navbar title="课程教案生成" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
+    <up-navbar :title="navbarTitle" @leftClick="onBack" leftIconColor="#000000" :fixed="false" bgColor="#ffffff" titleColor="#000000">
     </up-navbar>
     
     <!-- 内容区域，添加顶部内边距避免被navbar遮挡 -->
     <view class="content-wrapper">
+      <!-- 功能切换 -->
+      <view class="function-tabs">
+        <view 
+          :class="['tab-item', { active: currentFunction === 'lesson' }]"
+          @tap="switchFunction('lesson')"
+        >
+          教案生成
+        </view>
+        <view 
+          :class="['tab-item', { active: currentFunction === 'ppt' }]"
+          @tap="switchFunction('ppt')"
+        >
+          课件生成
+        </view>
+      </view>
+      
       <!-- 参数选择区域 -->
       <view class="params-section">
         <view class="param-group">
@@ -36,11 +52,11 @@
         </view>
         
         <view class="param-group">
-          <text class="param-label">活动主题</text>
+          <text class="param-label">{{ currentFunction === 'lesson' ? '活动主题' : '课件主题' }}</text>
           <textarea 
             class="theme-input" 
             v-model="activityTheme" 
-            placeholder="请输入活动主题，如：春天的小花、小动物的家等"
+            :placeholder="currentFunction === 'lesson' ? '请输入活动主题，如：春天的小花、小动物的家等' : '请输入课件主题，如：认识颜色、数字游戏等'"
             maxlength="50"
             auto-height
           />
@@ -49,7 +65,7 @@
       </view>
       
       <!-- 教案展示区域 -->
-      <view v-if="lessonPlan" class="lesson-plan-section">
+      <view v-if="currentFunction === 'lesson' && lessonPlan" class="lesson-plan-section">
         <view class="plan-header">
           <text class="plan-title">{{ lessonPlan.title }}</text>
           <view class="plan-actions">
@@ -96,6 +112,44 @@
         </scroll-view>
       </view>
       
+      <!-- 课件展示区域 -->
+      <view v-if="currentFunction === 'ppt' && pptContent" class="ppt-section">
+        <view class="ppt-header">
+          <text class="ppt-title">{{ pptContent.title }}</text>
+          <view class="ppt-actions">
+            <button class="action-btn" @tap="downloadPPT">
+              下载
+            </button>
+            <button class="action-btn" @tap="sharePPT">
+              转发
+            </button>
+            <button class="action-btn" @tap="togglePPTFavorite">
+              {{ isPPTFavorite ? '已收藏' : '收藏' }}
+            </button>
+          </view>
+        </view>
+        
+        <scroll-view class="ppt-content" :scroll-y="true">
+          <view v-for="(slide, index) in pptContent.slides" :key="index" class="ppt-slide">
+            <view class="slide-header">
+              <text class="slide-number">第{{ index + 1 }}页</text>
+              <text class="slide-title">{{ slide.title }}</text>
+            </view>
+            <view class="slide-content">
+              <view v-for="(item, itemIndex) in slide.content" :key="itemIndex" class="content-item">
+                <text class="item-text">{{ item }}</text>
+              </view>
+            </view>
+            <view v-if="slide.images && slide.images.length > 0" class="slide-images">
+              <text class="images-label">建议图片：</text>
+              <view class="image-list">
+                <text v-for="(image, imgIndex) in slide.images" :key="imgIndex" class="image-item">{{ image }}</text>
+              </view>
+            </view>
+          </view>
+        </scroll-view>
+      </view>
+      
       <!-- 历史记录 -->
       <view v-if="historyList.length > 0" class="history-section">
         <view class="history-header">
@@ -112,6 +166,7 @@
             <view class="history-info">
               <text class="history-title">{{ item.title }}</text>
               <text class="history-desc">{{ item.grade }} · {{ item.domain }} · {{ item.theme }}</text>
+              <text class="history-type">{{ item.type === 'ppt' ? '课件' : '教案' }}</text>
             </view>
             <text class="history-time">{{ formatTime(item.createTime) }}</text>
           </view>
@@ -127,10 +182,10 @@
       <button 
         class="generate-btn" 
         :class="{ disabled: !canGenerate }"
-        @tap="generateLessonPlan"
+        @tap="currentFunction === 'lesson' ? generateLessonPlan() : generatePPT()"
         :disabled="!canGenerate || isGenerating"
       >
-        {{ isGenerating ? '生成中...' : '生成教案' }}
+        {{ isGenerating ? '生成中...' : (currentFunction === 'lesson' ? '生成教案' : '生成课件') }}
       </button>
     </view>
   </view>
@@ -138,12 +193,6 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted } from 'vue';
-// 使用现有图标或移除图标依赖
-// import loadingIcon from '@/static/images/loading.gif';
-// import downloadIcon from '@/static/images/download.png';
-// import shareIcon from '@/static/images/share.png';
-// import favoriteIcon from '@/static/images/favorite.png';
-// import favoriteActiveIcon from '@/static/images/favorite_active.png';
 
 // 年级选项
 const grades = [
@@ -162,18 +211,36 @@ const domains = [
 ];
 
 // 状态管理
+const currentFunction = ref('lesson'); // 'lesson' 或 'ppt'
 const selectedGrade = ref('');
 const selectedDomain = ref('');
 const activityTheme = ref('');
 const isGenerating = ref(false);
 const lessonPlan = ref<any>(null);
+const pptContent = ref<any>(null);
 const isFavorite = ref(false);
+const isPPTFavorite = ref(false);
 const historyList = ref<any[]>([]);
 
 // 计算属性
 const canGenerate = computed(() => {
   return selectedGrade.value && selectedDomain.value && activityTheme.value.trim();
 });
+
+// 导航栏标题
+const navbarTitle = computed(() => {
+  return currentFunction.value === 'lesson' ? '课程教案生成' : '教学课件生成';
+});
+
+// 切换功能
+const switchFunction = (functionType: string) => {
+  currentFunction.value = functionType;
+  // 清空当前内容
+  lessonPlan.value = null;
+  pptContent.value = null;
+  isFavorite.value = false;
+  isPPTFavorite.value = false;
+};
 
 // 选择年级
 const selectGrade = (grade: string) => {
@@ -205,7 +272,7 @@ const generateLessonPlan = async () => {
     lessonPlan.value = plan;
     
     // 保存到历史记录
-    saveToHistory(plan);
+    saveToHistory(plan, 'lesson');
     
     uni.showToast({
       title: '教案生成成功',
@@ -214,6 +281,39 @@ const generateLessonPlan = async () => {
     
   } catch (error) {
     console.error('生成教案失败:', error);
+    uni.showToast({
+      title: '生成失败，请重试',
+      icon: 'none'
+    });
+  } finally {
+    isGenerating.value = false;
+  }
+};
+
+// 生成课件
+const generatePPT = async () => {
+  if (!canGenerate.value || isGenerating.value) return;
+  
+  isGenerating.value = true;
+  
+  try {
+    // 模拟API调用
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    
+    // 生成课件内容
+    const ppt = generatePPTContent();
+    pptContent.value = ppt;
+    
+    // 保存到历史记录
+    saveToHistory(ppt, 'ppt');
+    
+    uni.showToast({
+      title: '课件生成成功',
+      icon: 'success'
+    });
+    
+  } catch (error) {
+    console.error('生成课件失败:', error);
     uni.showToast({
       title: '生成失败，请重试',
       icon: 'none'
@@ -240,6 +340,78 @@ const generatePlanContent = () => {
     evaluation: generateEvaluation(),
     createTime: Date.now()
   };
+};
+
+// 生成课件内容
+const generatePPTContent = () => {
+  const gradeLabel = grades.find(g => g.value === selectedGrade.value)?.label;
+  const domainLabel = domains.find(d => d.value === selectedDomain.value)?.label;
+  
+  return {
+    title: `${gradeLabel}${domainLabel}课件：${activityTheme.value}`,
+    grade: gradeLabel,
+    domain: domainLabel,
+    theme: activityTheme.value,
+    slides: generatePPTSlides(),
+    createTime: Date.now()
+  };
+};
+
+// 生成PPT幻灯片
+const generatePPTSlides = () => {
+  const slides = [];
+  
+  // 封面页
+  slides.push({
+    title: '封面',
+    content: [
+      `${grades.find(g => g.value === selectedGrade.value)?.label}${domains.find(d => d.value === selectedDomain.value)?.label}活动`,
+      activityTheme.value,
+      '教师：______',
+      '日期：______'
+    ],
+    images: ['主题相关图片']
+  });
+  
+  // 活动目标页
+  slides.push({
+    title: '活动目标',
+    content: generateObjectives().split('；'),
+    images: ['目标图标']
+  });
+  
+  // 活动准备页
+  slides.push({
+    title: '活动准备',
+    content: generatePreparation().split('、'),
+    images: ['准备物品图片']
+  });
+  
+  // 活动过程页（根据领域生成不同数量的页面）
+  const processSteps = generateProcess();
+  processSteps.forEach((step, index) => {
+    slides.push({
+      title: step.title,
+      content: [step.content],
+      images: [`步骤${index + 1}相关图片`]
+    });
+  });
+  
+  // 活动延伸页
+  slides.push({
+    title: '活动延伸',
+    content: [generateExtension()],
+    images: ['延伸活动图片']
+  });
+  
+  // 活动评价页
+  slides.push({
+    title: '活动评价',
+    content: [generateEvaluation()],
+    images: ['评价表格']
+  });
+  
+  return slides;
 };
 
 // 生成活动目标
@@ -320,10 +492,11 @@ const generateEvaluation = () => {
 };
 
 // 保存到历史记录
-const saveToHistory = (plan: any) => {
+const saveToHistory = (content: any, type: string) => {
   const historyItem = {
-    ...plan,
-    id: Date.now()
+    ...content,
+    id: Date.now(),
+    type: type
   };
   
   historyList.value.unshift(historyItem);
@@ -342,7 +515,14 @@ const loadHistoryItem = (item: any) => {
   selectedGrade.value = grades.find(g => g.label === item.grade)?.value || '';
   selectedDomain.value = domains.find(d => d.label === item.domain)?.value || '';
   activityTheme.value = item.theme;
-  lessonPlan.value = item;
+  
+  if (item.type === 'ppt') {
+    currentFunction.value = 'ppt';
+    pptContent.value = item;
+  } else {
+    currentFunction.value = 'lesson';
+    lessonPlan.value = item;
+  }
 };
 
 // 清空历史记录
@@ -375,8 +555,41 @@ const downloadPlan = () => {
     data: content,
     success: () => {
       uni.showToast({
-        title: '教案已复制到剪贴板',
-        icon: 'success'
+        title: '教案已复制，可粘贴到文档中',
+        icon: 'success',
+        duration: 2000
+      });
+    },
+    fail: () => {
+      uni.showToast({
+        title: '复制失败，请重试',
+        icon: 'none'
+      });
+    }
+  });
+};
+
+// 下载课件
+const downloadPPT = () => {
+  if (!pptContent.value) return;
+  
+  // 生成课件文本
+  const content = generatePPTText(pptContent.value);
+  
+  // 复制到剪贴板
+  uni.setClipboardData({
+    data: content,
+    success: () => {
+      uni.showToast({
+        title: '课件内容已复制，可粘贴到PPT中',
+        icon: 'success',
+        duration: 2000
+      });
+    },
+    fail: () => {
+      uni.showToast({
+        title: '复制失败，请重试',
+        icon: 'none'
       });
     }
   });
@@ -400,6 +613,28 @@ const generatePlanText = (plan: any) => {
   return text;
 };
 
+// 生成课件文本
+const generatePPTText = (ppt: any) => {
+  let text = `${ppt.title}\n\n`;
+  text += `年级：${ppt.grade}\n`;
+  text += `领域：${ppt.domain}\n`;
+  text += `主题：${ppt.theme}\n\n`;
+  text += `幻灯片内容：\n\n`;
+  
+  ppt.slides.forEach((slide: any, index: number) => {
+    text += `第${index + 1}页：${slide.title}\n`;
+    slide.content.forEach((item: string) => {
+      text += `• ${item}\n`;
+    });
+    if (slide.images && slide.images.length > 0) {
+      text += `建议图片：${slide.images.join('、')}\n`;
+    }
+    text += '\n';
+  });
+  
+  return text;
+};
+
 // 转发教案
 const sharePlan = () => {
   if (!lessonPlan.value) return;
@@ -412,6 +647,34 @@ const sharePlan = () => {
     type: 0,
     href: 'https://example.com/lesson-plan',
     title: lessonPlan.value.title,
+    summary: content.substring(0, 100) + '...',
+    success: () => {
+      uni.showToast({
+        title: '转发成功',
+        icon: 'success'
+      });
+    },
+    fail: () => {
+      uni.showToast({
+        title: '转发失败',
+        icon: 'none'
+      });
+    }
+  });
+};
+
+// 转发课件
+const sharePPT = () => {
+  if (!pptContent.value) return;
+  
+  const content = generatePPTText(pptContent.value);
+  
+  uni.share({
+    provider: 'weixin',
+    scene: 'WXSceneSession',
+    type: 0,
+    href: 'https://example.com/ppt',
+    title: pptContent.value.title,
     summary: content.substring(0, 100) + '...',
     success: () => {
       uni.showToast({
@@ -457,6 +720,35 @@ const toggleFavorite = () => {
   uni.setStorageSync('lessonPlanFavorites', favorites);
 };
 
+// 切换课件收藏状态
+const togglePPTFavorite = () => {
+  if (!pptContent.value) return;
+  
+  isPPTFavorite.value = !isPPTFavorite.value;
+  
+  // 保存收藏状态
+  const favorites = uni.getStorageSync('pptFavorites') || [];
+  
+  if (isPPTFavorite.value) {
+    favorites.push(pptContent.value);
+    uni.showToast({
+      title: '已收藏',
+      icon: 'success'
+    });
+  } else {
+    const index = favorites.findIndex((item: any) => item.id === pptContent.value.id);
+    if (index > -1) {
+      favorites.splice(index, 1);
+    }
+    uni.showToast({
+      title: '已取消收藏',
+      icon: 'success'
+    });
+  }
+  
+  uni.setStorageSync('pptFavorites', favorites);
+};
+
 // 格式化时间
 const formatTime = (timestamp: number) => {
   const date = new Date(timestamp);
@@ -494,13 +786,36 @@ onMounted(() => {
 
 .content-wrapper {
   flex: 1;
-  padding-top: 16rpx; /* 增加顶部间隙 */
+  padding-top: 16rpx;
   margin-bottom: 16rpx;
   padding-left: 24rpx;
   padding-right: 24rpx;
-  padding-bottom: 32rpx; /* 增加底部间隙 */
+  padding-bottom: 32rpx;
   background: #f5f6fa;
   overflow-y: auto;
+}
+
+.function-tabs {
+  display: flex;
+  background: #fff;
+  border-radius: 12rpx;
+  margin-bottom: 16rpx;
+  padding: 8rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 20rpx 0;
+  font-size: 28rpx;
+  color: #666;
+  border-radius: 8rpx;
+  transition: all 0.3s;
+  
+  &.active {
+    background: #409eff;
+    color: #fff;
+  }
 }
 
 .params-section {
@@ -508,7 +823,7 @@ onMounted(() => {
   background: #fff;
   margin-bottom: 16rpx;
   border-radius: 12rpx;
-  margin-top: 16rpx; /* 重新添加顶部间隙 */
+  margin-top: 16rpx;
 }
 
 .param-group {
@@ -660,6 +975,113 @@ onMounted(() => {
   line-height: 1.6;
 }
 
+.ppt-section {
+  flex: 1;
+  background: #fff;
+  margin-bottom: 16rpx;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12rpx;
+}
+
+.ppt-header {
+  padding: 24rpx;
+  border-bottom: 2rpx solid #f0f0f0;
+}
+
+.ppt-title {
+  display: block;
+  font-size: 32rpx;
+  color: #333;
+  font-weight: bold;
+  margin-bottom: 16rpx;
+}
+
+.ppt-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.ppt-content {
+  flex: 1;
+  padding: 24rpx;
+}
+
+.ppt-slide {
+  margin-bottom: 32rpx;
+  padding: 24rpx;
+  background: #f8f9fa;
+  border-radius: 12rpx;
+  border-left: 8rpx solid #409eff;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.slide-header {
+  margin-bottom: 16rpx;
+}
+
+.slide-number {
+  display: block;
+  font-size: 22rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.slide-title {
+  display: block;
+  font-size: 28rpx;
+  color: #333;
+  font-weight: bold;
+}
+
+.slide-content {
+  margin-bottom: 16rpx;
+}
+
+.content-item {
+  margin-bottom: 12rpx;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.item-text {
+  display: block;
+  font-size: 26rpx;
+  color: #666;
+  line-height: 1.6;
+}
+
+.slide-images {
+  border-top: 2rpx solid #e0e0e0;
+  padding-top: 16rpx;
+}
+
+.images-label {
+  display: block;
+  font-size: 24rpx;
+  color: #999;
+  margin-bottom: 8rpx;
+}
+
+.image-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.image-item {
+  font-size: 22rpx;
+  color: #409eff;
+  background: #e6f7ff;
+  padding: 4rpx 8rpx;
+  border-radius: 4rpx;
+}
+
 .history-section {
   background: #fff;
   padding: 24rpx;
@@ -718,6 +1140,17 @@ onMounted(() => {
   display: block;
   font-size: 22rpx;
   color: #999;
+  margin-bottom: 4rpx;
+}
+
+.history-type {
+  display: block;
+  font-size: 20rpx;
+  color: #409eff;
+  background: #e6f7ff;
+  padding: 2rpx 8rpx;
+  border-radius: 4rpx;
+  width: fit-content;
 }
 
 .history-time {
@@ -726,7 +1159,7 @@ onMounted(() => {
 }
 
 .bottom-spacer {
-  height: 88rpx; /* 调整高度 */
+  height: 88rpx;
 }
 
 .bottom-section {
@@ -738,7 +1171,7 @@ onMounted(() => {
   background: #fff;
   box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.1);
   z-index: 100;
-  border-top: 1rpx solid #f0f0f0; /* 添加顶部边框 */
+  border-top: 1rpx solid #f0f0f0;
 }
 
 .generate-btn {
